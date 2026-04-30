@@ -8,43 +8,53 @@ function Slider({
   value,
   min = 0,
   max = 100,
+  onValueChange,
   ...props
-}: SliderPrimitive.Root.Props) {
-  const _values = Array.isArray(value)
-    ? value
-    : Array.isArray(defaultValue)
-      ? defaultValue
-      : [min, max]
+}: SliderPrimitive.Root.Props & { onValueChange?: (value: number[]) => void }) {
+  const values = value ?? defaultValue ?? [min, max]
+  
+  // Base UI uses onValueChange but the signature might differ
+  // We wrap it to ensure it always returns an array for shadcn compatibility
+  const handleValueChange: SliderPrimitive.Root.Props["onValueChange"] = (val) => {
+    if (onValueChange) {
+      onValueChange(Array.isArray(val) ? val : [val])
+    }
+  }
 
   return (
     <SliderPrimitive.Root
-      className={cn("data-horizontal:w-full data-vertical:h-full", className)}
+      className={cn("relative w-full flex items-center h-6 touch-none select-none", className)}
       data-slot="slider"
       defaultValue={defaultValue}
       value={value}
       min={min}
       max={max}
-      thumbAlignment="edge"
+      onValueChange={handleValueChange}
       {...props}
     >
-      <SliderPrimitive.Control className="relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-vertical:h-full data-vertical:min-h-40 data-vertical:w-auto data-vertical:flex-col">
-        <SliderPrimitive.Track
-          data-slot="slider-track"
-          className="relative grow overflow-hidden rounded-full bg-muted select-none data-horizontal:h-1 data-horizontal:w-full data-vertical:h-full data-vertical:w-1"
-        >
-          <SliderPrimitive.Indicator
-            data-slot="slider-range"
-            className="bg-primary select-none data-horizontal:h-full data-vertical:w-full"
-          />
-        </SliderPrimitive.Track>
-        {Array.from({ length: _values.length }, (_, index) => (
+      <SliderPrimitive.Track
+        data-slot="slider-track"
+        className="relative h-1.5 w-full rounded-full bg-muted overflow-hidden"
+      >
+        <SliderPrimitive.Indicator
+          data-slot="slider-range"
+          className="absolute h-full bg-primary"
+        />
+      </SliderPrimitive.Track>
+      {Array.isArray(values) ? (
+        values.map((_, index) => (
           <SliderPrimitive.Thumb
-            data-slot="slider-thumb"
             key={index}
-            className="relative block size-3 shrink-0 rounded-full border border-ring bg-white ring-ring/50 transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none disabled:opacity-50"
+            data-slot="slider-thumb"
+            className="block h-4 w-4 rounded-full border-2 border-primary bg-background shadow-sm hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50 -ml-2"
           />
-        ))}
-      </SliderPrimitive.Control>
+        ))
+      ) : (
+        <SliderPrimitive.Thumb
+          data-slot="slider-thumb"
+          className="block h-4 w-4 rounded-full border-2 border-primary bg-background shadow-sm hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50 -ml-2"
+        />
+      )}
     </SliderPrimitive.Root>
   )
 }
