@@ -120,25 +120,28 @@ export function ColorPalette() {
                 </div>
               </div>
 
-              <div className="grid gap-3">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/40 group hover:bg-muted/50 transition-colors">
-                  <div className="space-y-0.5">
-                    <div className="text-[9px] font-black text-muted-foreground uppercase tracking-tighter">RGB Value</div>
-                    <div className="text-sm font-mono font-bold">rgb({rgb.r}, {rgb.g}, {rgb.b})</div>
-                  </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => copyToClipboard(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`)}>
-                    <Copy className="h-3.5 w-3.5" />
-                  </Button>
+              <div className="grid gap-2">
+                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1 flex items-center gap-2">
+                  <Copy className="h-3 w-3" /> Quick Copy
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/40 group hover:bg-muted/50 transition-colors">
-                  <div className="space-y-0.5">
-                    <div className="text-[9px] font-black text-muted-foreground uppercase tracking-tighter">HSL Value</div>
-                    <div className="text-sm font-mono font-bold">hsl({hsl.h}, {hsl.s}%, {hsl.l}%)</div>
+                {[
+                  { label: "HEX (대문자)", value: color.toUpperCase() },
+                  { label: "HEX (소문자)", value: color.toLowerCase() },
+                  { label: "RGB", value: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` },
+                  { label: "RGBA", value: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 1)` },
+                  { label: "HSL", value: `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)` },
+                  { label: "HSLA", value: `hsla(${hsl.h}, ${hsl.s}%, ${hsl.l}%, 1)` },
+                ].map((fmt, i) => (
+                  <div key={i} className="flex items-center justify-between p-2 rounded-md bg-muted/20 border border-border/20 group hover:bg-muted/40 transition-colors">
+                    <div className="space-y-0.5 min-w-0">
+                      <div className="text-[8px] font-bold text-muted-foreground uppercase">{fmt.label}</div>
+                      <div className="text-[11px] font-mono font-bold truncate">{fmt.value}</div>
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 opacity-50 group-hover:opacity-100" onClick={() => copyToClipboard(fmt.value)}>
+                      <Copy className="h-3 w-3" />
+                    </Button>
                   </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => copyToClipboard(`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`)}>
-                    <Copy className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
+                ))}
               </div>
             </div>
           </CardContent>
