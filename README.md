@@ -2,8 +2,6 @@
 
 **Vibe Tools**는 개발자들을 위한 프리미엄 웹 유틸리티 모음 서비스입니다. 세련된 UI와 함께 일상적인 개발 과정에서 자주 필요한 다양한 도구들을 한곳에서 제공합니다.
 
-![Vibe Tools Screenshot](https://raw.githubusercontent.com/trance81/vibetool/main/public/og-image.png) *(참고: 실제 배포 후 스크린샷으로 교체 권장)*
-
 ## ✨ 주요 기능
 
 ### 🖼️ 이미지 / 미디어
