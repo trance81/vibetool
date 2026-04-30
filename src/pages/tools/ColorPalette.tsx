@@ -66,27 +66,19 @@ export function ColorPalette() {
   const getHarmonies = () => {
     const { h, s, l } = hsl;
     return [
-      { name: "보색 (Complementary)", hex: hslToHex((h + 180) % 360, s, l) },
-      { name: "유사색 (Analogous) 1", hex: hslToHex((h + 30) % 360, s, l) },
-      { name: "유사색 (Analogous) 2", hex: hslToHex((h - 30 + 360) % 360, s, l) },
-      { name: "삼보색 (Triadic) 1", hex: hslToHex((h + 120) % 360, s, l) },
-      { name: "삼보색 (Triadic) 2", hex: hslToHex((h + 240) % 360, s, l) },
+      { name: "보색", type: "Complementary", hex: hslToHex((h + 180) % 360, s, l), desc: "색상환의 반대편 색상" },
+      { name: "유사색 1", type: "Analogous", hex: hslToHex((h + 30) % 360, s, l), desc: "인접한 따뜻한 색상" },
+      { name: "유사색 2", type: "Analogous", hex: hslToHex((h - 30 + 360) % 360, s, l), desc: "인접한 차가운 색상" },
+      { name: "삼보색 1", type: "Triadic", hex: hslToHex((h + 120) % 360, s, l), desc: "균형 잡힌 대비 색상" },
+      { name: "삼보색 2", type: "Triadic", hex: hslToHex((h + 240) % 360, s, l), desc: "다채로운 조합 색상" },
     ];
-  };
-
-  const getShades = () => {
-    const { h, s } = hsl;
-    return [10, 20, 30, 40, 50, 60, 70, 80, 90].map(lightness => ({
-      l: lightness,
-      hex: hslToHex(h, s, lightness)
-    }));
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
       {/* Left: Color Picker & Values */}
-      <div className="lg:col-span-5 space-y-6">
-        <Card className="overflow-hidden border-border/40 shadow-xl bg-card/50">
+      <div className="lg:col-span-4 space-y-6">
+        <Card className="overflow-hidden border-border/40 shadow-xl bg-card/50 sticky top-6">
           <CardContent className="p-0">
             <div 
               className="h-48 w-full transition-colors duration-300 relative group"
@@ -105,7 +97,7 @@ export function ColorPalette() {
                     <Pipette className="h-3 w-3" /> 색상 선택
                   </Label>
                   <div className="flex gap-2">
-                    <div className="w-12 h-10 rounded border border-border overflow-hidden shrink-0">
+                    <div className="w-12 h-10 rounded border border-border overflow-hidden shrink-0 shadow-inner">
                       <input 
                         id="color-picker"
                         type="color" 
@@ -122,25 +114,25 @@ export function ColorPalette() {
                           setColor(val);
                         }
                       }}
-                      className="font-mono font-bold h-10"
+                      className="font-mono font-bold h-10 text-center"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="grid gap-3">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/40">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/40 group hover:bg-muted/50 transition-colors">
                   <div className="space-y-0.5">
-                    <div className="text-[10px] font-black text-muted-foreground uppercase">RGB</div>
+                    <div className="text-[9px] font-black text-muted-foreground uppercase tracking-tighter">RGB Value</div>
                     <div className="text-sm font-mono font-bold">rgb({rgb.r}, {rgb.g}, {rgb.b})</div>
                   </div>
                   <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => copyToClipboard(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`)}>
                     <Copy className="h-3.5 w-3.5" />
                   </Button>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/40">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/40 group hover:bg-muted/50 transition-colors">
                   <div className="space-y-0.5">
-                    <div className="text-[10px] font-black text-muted-foreground uppercase">HSL</div>
+                    <div className="text-[9px] font-black text-muted-foreground uppercase tracking-tighter">HSL Value</div>
                     <div className="text-sm font-mono font-bold">hsl({hsl.h}, {hsl.s}%, {hsl.l}%)</div>
                   </div>
                   <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => copyToClipboard(`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`)}>
@@ -153,78 +145,61 @@ export function ColorPalette() {
         </Card>
       </div>
 
-      {/* Right: Harmonies & Themes */}
-      <div className="lg:col-span-7 space-y-6">
-        <Tabs defaultValue="harmony" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 h-11 bg-muted/40 p-1 border border-border/40">
-            <TabsTrigger value="harmony" className="gap-2 font-bold text-xs">
-              <RefreshCw className="h-3.5 w-3.5" /> 배색 가이드
-            </TabsTrigger>
-            <TabsTrigger value="theme" className="gap-2 font-bold text-xs">
-              <Layers className="h-3.5 w-3.5" /> 테마 파레트
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="harmony" className="mt-6 space-y-4">
-            <div className="grid gap-3">
-              {getHarmonies().map((h, i) => (
-                <div key={i} className="flex items-center gap-4 group">
-                  <div 
-                    className="w-16 h-16 rounded-xl border border-border shadow-sm shrink-0 cursor-pointer transition-transform hover:scale-105 active:scale-95"
-                    style={{ backgroundColor: h.hex }}
-                    onClick={() => setColor(h.hex)}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-bold text-foreground mb-0.5">{h.name}</div>
-                    <div className="text-[10px] font-mono text-muted-foreground uppercase">{h.hex}</div>
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => copyToClipboard(h.hex)}
-                  >
-                    <Copy className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </TabsContent>
+      {/* Right: Harmonies */}
+      <div className="lg:col-span-8 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h3 className="text-lg font-bold tracking-tight flex items-center gap-2">
+              <RefreshCw className="h-4 w-4 text-primary" /> 추천 배색 가이드
+            </h3>
+            <p className="text-xs text-muted-foreground">선택한 색상과 어울리는 다양한 조합을 제안합니다.</p>
+          </div>
+        </div>
 
-          <TabsContent value="theme" className="mt-6 space-y-6">
-            <div className="space-y-4">
-              <div className="text-xs font-bold text-muted-foreground flex items-center gap-2">
-                <Grid className="h-3.5 w-3.5" /> 명도 단계 (Shades & Tints)
-              </div>
-              <div className="grid grid-cols-9 gap-2">
-                {getShades().map((s, i) => (
-                  <div key={i} className="space-y-2 text-center group">
-                    <div 
-                      className="aspect-square rounded-lg border border-border/40 shadow-sm cursor-pointer transition-all hover:ring-2 hover:ring-primary/50"
-                      style={{ backgroundColor: s.hex }}
-                      onClick={() => setColor(s.hex)}
-                      title={`${s.hex} (L: ${s.l}%)`}
-                    />
-                    <div className="text-[9px] font-mono text-muted-foreground font-bold opacity-0 group-hover:opacity-100">
-                      {s.l}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <Card className="bg-muted/20 border-dashed border-border/60">
-              <CardContent className="p-4 space-y-3">
-                <div className="text-[11px] font-bold text-foreground italic flex items-center gap-2">
-                   🎨 디자인 팁
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {getHarmonies().map((h, i) => (
+            <Card key={i} className="group border-border/40 bg-card/30 hover:border-primary/30 transition-all shadow-sm overflow-hidden">
+              <div 
+                className="h-24 w-full cursor-pointer transition-transform group-hover:scale-[1.02] relative"
+                style={{ backgroundColor: h.hex }}
+                onClick={() => setColor(h.hex)}
+              >
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10 backdrop-blur-[1px]">
+                   <span className="text-[10px] font-bold bg-background/80 px-2 py-1 rounded shadow-sm">색상 적용하기</span>
                 </div>
-                <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  선택한 색상을 메인 브랜드 컬러로 사용할 때, 보색은 <strong>강조 버튼</strong>이나 <strong>알림</strong>에 사용하고, 명도 단계는 <strong>배경색</strong>이나 <strong>경계선</strong> 설정 시 유용합니다.
-                </p>
+              </div>
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="space-y-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-foreground">{h.name}</span>
+                    <Badge variant="outline" className="text-[9px] px-1.5 h-4 font-mono">{h.type}</Badge>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground font-mono uppercase">{h.hex}</p>
+                </div>
+                <Button 
+                  variant="secondary" 
+                  size="icon" 
+                  className="h-8 w-8 rounded-full shadow-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    copyToClipboard(h.hex);
+                  }}
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                </Button>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
+          ))}
+        </div>
+
+        <div className="p-4 rounded-xl border border-dashed border-border/60 bg-muted/10 space-y-3">
+          <div className="text-[11px] font-bold text-foreground italic flex items-center gap-2">
+             💡 디자인 팁
+          </div>
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            <strong>보색</strong>은 강렬한 대비가 필요할 때(버튼, 알림) 적합하며, <strong>유사색</strong>은 전체적인 디자인의 통일감과 편안함을 줄 때 사용하면 좋습니다. <strong>삼보색</strong>은 보다 활기차고 균형 잡힌 다채로운 UI를 구성하는 데 유용합니다.
+          </p>
+        </div>
       </div>
     </div>
   );
