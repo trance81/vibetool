@@ -14,6 +14,7 @@ import { QrGenerator } from "@/src/pages/tools/QrGenerator";
 import { ImageResizer } from "@/src/pages/tools/ImageResizer";
 import { UrlShortener } from "@/src/pages/tools/UrlShortener";
 import { UrlBookmark } from "@/src/pages/tools/UrlBookmark";
+import { ColorPalette } from "@/src/pages/tools/ColorPalette";
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="/tools/image-resizer" element={<ToolLayout title="이미지 리사이저" description="브라우저 내에서 안전하게 이미지를 처리합니다."><ImageResizer /></ToolLayout>} />
           <Route path="/tools/url-shortener" element={<ToolLayout title="단축 URL" description="긴 주소를 짧게 줄입니다."><UrlShortener /></ToolLayout>} />
           <Route path="/tools/url-bookmark" element={<ToolLayout title="URL 북마크" description="개발 시 자주 사용하는 유용한 링크들입니다."><UrlBookmark /></ToolLayout>} />
+          <Route path="/tools/color-palette" element={<ToolLayout title="색상 파레트" description="색상 선택 및 테마 생성 도구."><ColorPalette /></ToolLayout>} />
         </Routes>
       </Router>
       <Toaster position="bottom-right" />

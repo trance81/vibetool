@@ -9,7 +9,8 @@ import {
   CalendarClock, 
   Table, 
   Database, 
-  Bookmark 
+  Bookmark,
+  Palette
 } from "lucide-react";
 
 export interface Tool {
@@ -24,7 +25,7 @@ export interface Tool {
 export const TOOL_GROUPS = [
   {
     title: "이미지/미디어",
-    tools: ["qr-generator", "image-resizer"]
+    tools: ["qr-generator", "image-resizer", "color-palette"]
   },
   {
     title: "텍스트 변환",
@@ -55,6 +56,14 @@ export const ALL_TOOLS: Tool[] = [
     description: "이미지 크기 조절 및 포맷 변환.",
     icon: ImageIcon,
     path: "/tools/image-resizer",
+    group: "이미지/미디어"
+  },
+  {
+    id: "color-palette",
+    title: "색상 파레트",
+    description: "색상 선택 및 테마 생성 도구.",
+    icon: Palette,
+    path: "/tools/color-palette",
     group: "이미지/미디어"
   },
   {
