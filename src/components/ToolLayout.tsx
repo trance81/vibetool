@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronLeft, Home, ShieldCheck } from "lucide-react";
+import { ChevronLeft, Home, ShieldCheck, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ToolLayoutProps {
@@ -12,6 +12,27 @@ interface ToolLayoutProps {
 export function ToolLayout({ children, title, description }: ToolLayoutProps) {
   const location = useLocation();
   const isHome = location.pathname === "/";
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const timeString = currentTime.toLocaleTimeString('ko-KR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+
+  const dateString = currentTime.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans flex flex-col selection:bg-primary/30 selection:text-primary-foreground">
@@ -29,11 +50,10 @@ export function ToolLayout({ children, title, description }: ToolLayoutProps) {
         </div>
         
         <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-2 bg-background/50 rounded px-2 py-0.5 border border-border">
-            <span className="text-[9px] font-mono text-muted-foreground uppercase">Runtime:</span>
-            <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
-              <div className="bg-primary w-[35%] h-full"></div>
-            </div>
+          <div className="hidden sm:flex items-center gap-1.5 text-[10px] font-mono text-muted-foreground bg-background/50 rounded px-2 py-0.5 border border-border">
+            <Clock className="h-3 w-3 text-primary" />
+            <span>{dateString}</span>
+            <span className="text-foreground font-bold">{timeString}</span>
           </div>
           
           <nav className="flex items-center gap-1">
