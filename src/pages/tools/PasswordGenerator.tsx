@@ -3,7 +3,7 @@ import { Copy, RefreshCw, ShieldCheck, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,15 @@ export function PasswordGenerator() {
   const [excludeSimilar, setExcludeSimilar] = useState(false);
   const [passwords, setPasswords] = useState<string[]>([]);
 
+  const handleLengthChange = (val: string) => {
+    const num = parseInt(val, 10);
+    if (!isNaN(num)) {
+      setLength(Math.min(128, Math.max(1, num)));
+    } else if (val === "") {
+      setLength(0);
+    }
+  };
+
   const generatePasswords = () => {
     let charset = "";
     if (useUppercase) charset += excludeSimilar ? "ABCDEFGHJKLMNPQRSTUVWXYZ" : "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -26,6 +35,11 @@ export function PasswordGenerator() {
 
     if (charset === "") {
       toast.error("최소 하나의 문자 옵션을 선택해야 합니다.");
+      return;
+    }
+
+    if (length <= 0) {
+      toast.error("길이는 1 이상이어야 합니다.");
       return;
     }
 
@@ -72,18 +86,35 @@ export function PasswordGenerator() {
       <div className="space-y-6">
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <Label>길이: {length}</Label>
+            <Label htmlFor="length-input">비밀번호 길이</Label>
             <Badge variant={strength.color as any} className="gap-1">
               <StrengthIcon className="h-3 w-3" /> {strength.label}
             </Badge>
           </div>
-          <Slider
-            value={[length]}
-            onValueChange={(v) => setLength(v[0])}
-            min={8}
-            max={64}
-            step={1}
-          />
+          <div className="flex gap-2">
+            <Input
+              id="length-input"
+              type="number"
+              value={length || ""}
+              onChange={(e) => handleLengthChange(e.target.value)}
+              min={1}
+              max={128}
+              className="w-24 h-10 font-mono font-bold text-center"
+            />
+            <div className="flex flex-1 gap-1">
+              {[8, 12, 16, 24].map((l) => (
+                <Button
+                  key={l}
+                  variant={length === l ? "default" : "outline"}
+                  size="sm"
+                  className="flex-1 h-10 text-xs font-bold"
+                  onClick={() => setLength(l)}
+                >
+                  {l}자
+                </Button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="space-y-4 pt-2">
