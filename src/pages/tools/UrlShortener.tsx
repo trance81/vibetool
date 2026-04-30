@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Copy, ExternalLink, History, Trash2, ArrowRight } from "lucide-react";
+import { Link, Copy, ExternalLink, History, Trash2, ArrowRight, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -81,9 +81,14 @@ export function UrlShortener() {
               {loading ? "생성 중..." : "단축하기"}
             </Button>
           </div>
-          <p className="text-[10px] text-muted-foreground italic flex items-center gap-1">
-            <Link className="h-2.5 w-2.5" /> is.gd 서비스를 통해 단축됩니다.
-          </p>
+          <div className="flex flex-col gap-1">
+            <p className="text-[10px] text-muted-foreground italic flex items-center gap-1">
+              <Link className="h-2.5 w-2.5" /> is.gd 서비스를 통해 단축됩니다.
+            </p>
+            <p className="text-[10px] text-primary/80 font-bold flex items-center gap-1">
+              <ShieldCheck className="h-3 w-3" /> 사용자의 어떠한 정보도 저장하거나 추적하지 않는 안전한 서비스입니다.
+            </p>
+          </div>
         </div>
       </div>
 

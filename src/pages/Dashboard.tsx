@@ -40,7 +40,7 @@ export function Dashboard() {
               모든 데이터는 사용자 브라우저의 <span className="text-foreground underline decoration-primary/30">로컬 스토리지</span>에서만 처리됩니다.
             </p>
             <p className="text-[10px] leading-relaxed text-muted-foreground italic">
-              * URL 단축 기능을 제외한 모든 도구는 외부 서버 전송 없이 100% 로컬 환경에서 실행됩니다.
+              * URL 단축 기능을 포함한 모든 도구는 어떠한 사용자 정보도 수집하거나 추적하지 않으며, 모든 프로세스는 개인정보 보호를 최우선으로 실행됩니다.
             </p>
           </div>
         </section>
