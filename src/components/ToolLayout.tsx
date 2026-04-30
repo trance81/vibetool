@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronLeft, Home } from "lucide-react";
+import { ChevronLeft, Home, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ToolLayoutProps {
@@ -78,7 +78,13 @@ export function ToolLayout({ children, title, description }: ToolLayoutProps) {
           <span>Web-Crypto Active</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="hidden xs:inline">UTF-8</span>
+          <span className="flex items-center gap-1.5 text-primary font-bold">
+            <ShieldCheck className="h-3 w-3" />
+            Privacy-First
+          </span>
+          <span className="border-l border-border h-2.5"></span>
+          <span className="hidden sm:inline">100% Local Processing</span>
+          <span className="border-l border-border h-2.5 hidden sm:inline"></span>
           <span className="text-primary font-bold">© {new Date().getFullYear()} Vibe Dev Tools</span>
         </div>
       </footer>

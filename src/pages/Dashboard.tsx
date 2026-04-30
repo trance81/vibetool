@@ -2,6 +2,7 @@ import { ALL_TOOLS, TOOL_GROUPS } from "@/src/lib/tools-config";
 import { GroupBox } from "@/src/components/GroupBox";
 import { ToolCard } from "@/src/components/ToolCard";
 import { motion } from "motion/react";
+import { ShieldCheck } from "lucide-react";
 
 export function Dashboard() {
   return (
@@ -28,8 +29,21 @@ export function Dashboard() {
             </div>
           </div>
         </section>
-        
 
+        <section className="bg-primary/5 border border-primary/20 rounded-lg p-3">
+          <h2 className="text-[10px] font-black text-primary uppercase tracking-widest mb-3 flex items-center gap-2">
+            <ShieldCheck className="h-3 w-3" />
+            Data Privacy
+          </h2>
+          <div className="space-y-2">
+            <p className="text-[10px] leading-relaxed text-muted-foreground font-bold">
+              모든 데이터는 사용자 브라우저의 <span className="text-foreground underline decoration-primary/30">로컬 스토리지</span>에서만 처리됩니다.
+            </p>
+            <p className="text-[10px] leading-relaxed text-muted-foreground italic">
+              * URL 단축 기능을 제외한 모든 도구는 외부 서버 전송 없이 100% 로컬 환경에서 실행됩니다.
+            </p>
+          </div>
+        </section>
       </aside>
 
       {/* Main Grid Area */}
