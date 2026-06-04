@@ -8,8 +8,8 @@ alwaysApply: false
 # Add / edit tool
 <!-- 도구 추가·편집 -->
 
-Read [AGENTS.md](../../AGENTS.md) checklist. In short:
-<!-- AGENTS.md 체크리스트를 읽을 것. 요약: -->
+Read [AGENTS.md](../../AGENTS.md) and skill [.cursor/skills/vibe-add-tool/SKILL.md](../../.cursor/skills/vibe-add-tool/SKILL.md). In short:
+<!-- AGENTS.md + vibe-add-tool 스킬. 요약: -->
 
 1. `src/pages/tools/{Name}.tsx` — copy layout from a similar tool
    <!-- 페이지 생성 — 비슷한 도구 레이아웃 복사 -->

@@ -10,6 +10,12 @@ alwaysApply: true
 - Follow [AGENTS.md](../../AGENTS.md) for architecture, commands, and checklists. Do not duplicate AGENTS content here.
   <!-- 아키텍처·명령·체크리스트는 AGENTS.md만 따르고, 여기에 복사하지 말 것 -->
 
+- For feature requests, use copy templates in [PROMPT.md](../../PROMPT.md); suggest `@PROMPT.md` when the user is unsure what to send.
+  <!-- 기능 추가 시 PROMPT.md 템플릿 안내 -->
+
+- For add-tool / harness audit / API / post-change verify, use `.cursor/skills/` (see [CLAUDE.md](../../CLAUDE.md) triggers). After code changes run `npm run lint`, `npm run build`, and `npm run check:registry` when tools or routes changed.
+  <!-- 도구·API·검증 스킬 및 lint/build/check:registry -->
+
 - Minimal diff; match patterns in neighboring files.
   <!-- 최소 변경, 주변 파일 패턴과 맞출 것 -->
 

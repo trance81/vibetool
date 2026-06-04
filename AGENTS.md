@@ -7,6 +7,114 @@ Do not duplicate this content in `.cursor/rules/` — rules only add Cursor-spec
 > Claude Code·Cursor 등 AI 코딩 도구가 이 저장소에서 따라야 할 **단일 기준 문서**입니다.  
 > `.cursor/rules/`에는 같은 내용을 복사하지 말고, Cursor 전용 설정(globs 등)만 두세요.
 
+**Document convention:** Body text in **English** (for agents). Section labels use `<!-- Korean -->`; human-readable Korean follows in `>` blockquotes. Same pattern in `CLAUDE.md`, `README.md`, and `**/SKILL.md`.
+
+> **문서 규칙:** 본문은 영문(에이전트용) · 섹션 제목은 `<!-- 한글 -->` · 설명은 `>` 인용 한글. CLAUDE·README·스킬도 동일.
+
+## Harness (this repository)
+<!-- 경량 하네스 — revfactory/harness를 단일 개발·도구 모음 규모에 맞게 축소 -->
+
+This repo uses a **coding harness** (not a full eval/orchestration harness): registry code + docs + optional skills.
+
+> **코딩 하네스**입니다. 멀티 에이전트 팀·Phase 0~7 전체 harness는 도입하지 않습니다.
+
+| Layer | Location | Role |
+|-------|----------|------|
+| SSOT | `AGENTS.md` (this file) | Architecture, checklists, conventions |
+| Claude entry | `CLAUDE.md` | Harness triggers + changelog; links here |
+| Prompt templates | `PROMPT.md` | Copy-paste feature prompts (Cursor / Claude) |
+| Cursor rules | `.cursor/rules/*.mdc` | Globs + habits only — **no** full AGENTS paste |
+| Skills | `.cursor/skills/`, `.claude/skills/` | `vibe-add-tool`, `vibe-harness-audit`, `vibe-dual-server-api`, `vibe-verify` |
+| Structural code | `tools-config.ts`, `tool-routes.tsx`, `App.tsx` | Tool IDs and routes stay in sync |
+
+> | 레이어 | 위치 | 역할 |
+> |--------|------|------|
+> | SSOT | AGENTS.md | 아키텍처·체크리스트 |
+> | Claude 진입 | CLAUDE.md | 트리거·변경 이력 |
+> | 프롬프트 | PROMPT.md | Cursor/Claude 복사 템플릿 |
+> | Cursor rules | .cursor/rules/ | globs·습관만 |
+> | 스킬 | .cursor/skills · .claude/skills | 워크플로 |
+> | 구조 코드 | tools-config · tool-routes · App | id·라우트 동기화 |
+
+**When to load a skill**
+
+- New tool / registration → `vibe-add-tool`
+- Registry or doc drift audit → `vibe-harness-audit`
+- `server.ts` or `api/` change → `vibe-dual-server-api`
+- After implementation → `vibe-verify` (lint + build + `check:registry`)
+
+> - 새 도구 → vibe-add-tool · 점검 → vibe-harness-audit · API → vibe-dual-server-api · 구현 후 → vibe-verify
+
+Cursor: skills under `.cursor/skills/` may auto-apply from `description` frontmatter; for important tasks attach `@AGENTS.md`.  
+Claude Code: read `CLAUDE.md` triggers, then the matching `.claude/skills/*/SKILL.md`.
+
+> Cursor는 `.cursor/skills/` · Claude는 `.claude/skills/` + `CLAUDE.md` 트리거. 스킬 본문을 바꾸면 **양쪽 디렉터리**를 맞춥니다.
+
+**What we do not adopt** (from [harness-100](https://github.com/revfactory/harness-100), [OpenSpace](https://github.com/HKUDS/OpenSpace)): multi-agent teams, cloud skill evolution, or autonomous multi-hour builds. This repo stays a **single-agent, minimal-diff** coding harness.
+
+> 대형 하네스(멀티 에이전트·자율 장시간 빌드·클라우드 스킬 진화)는 도입하지 않습니다.
+
+### Verifiable gates
+<!-- 검증 가능한 게이트 (Anthropic long-running harness에서 차용, 축소) -->
+
+After code changes, run (in order when possible):
+
+```bash
+npm run lint
+npm run build
+npm run check:registry   # ALL_TOOLS ↔ TOOL_PAGE_REGISTRY ↔ TOOL_GROUPS
+```
+
+Do not claim “done” without exit code 0 from commands you actually ran. Prefer `vibe-verify` skill for a skeptical post-change pass ([Anthropic](https://www.anthropic.com/engineering/harness-design-long-running-apps): separate verification from generation).
+
+> 완료 선언 전 **lint · build · check:registry**를 실행하고, 실패 시 수정합니다.
+
+### Agent behavior (constitution)
+<!-- CLAUDE.md / Vault-style 행동 지침 (gpters 지식베이스 글에서 차용, 코드 저장소용) -->
+
+- **Read before edit** — open the file (or a close peer) before changing it
+- **Minimal diff** — one logical change per request when possible; large features → one tool or one concern at a time
+- **Uncertain placement** — if tool group, id, or API shape is unclear, **ask the user**; do not guess registration
+- **No destructive git** — no force push, hard reset, or file deletes unless the user explicitly asks
+- **No secrets in commits** — never commit `.env`, tokens, or credentials
+- **Multi-session work** — optional handoff: copy [docs/agent/HANDOFF.template.md](./docs/agent/HANDOFF.template.md)
+
+> 불명확하면 등록을 추측하지 말고 사용자에게 확인합니다.
+
+### UI acceptance (new/changed tool pages)
+<!-- 프론트 품질 루브릭 (Anthropic 디자인 기준을 이 프로젝트에 맞게 축소) -->
+
+| Criterion | Expectation |
+|-----------|-------------|
+| **Coherence** | Dark theme, indigo accent, Shadcn primitives — matches existing tools |
+| **Usability** | Primary action obvious; labels in Korean for user-facing copy |
+| **Layout** | `fillViewport` only when the tool is a full-height panel; internal scroll only |
+| **Avoid** | Generic “AI slop” (purple-on-white cards, unrelated gradients) — this app is dark-only |
+
+> | 기준 | 기대 |
+> |------|------|
+> | **일관성** | 다크·인디고·Shadcn, 기존 도구와 동일 톤 |
+> | **사용성** | 주요 동작이 분명 · UI 문구 한국어 |
+> | **레이아웃** | 전체 높이 UI만 fillViewport · 내부 스크롤만 |
+> | **지양** | 흰 배경+보라 그라데이션 등 generic AI UI (이 앱은 다크 전용) |
+
+### External references
+<!-- 하네스 구축 참고 (이 저장소에 맞게 일부만 반영) -->
+
+| Source | Relevant idea | Applied here |
+|--------|---------------|--------------|
+| [revfactory/harness-100](https://github.com/revfactory/harness-100) | Trigger boundaries, skills, changelog | `CLAUDE.md`, skill `description`, NOT-trigger sections |
+| [Anthropic long-running harness](https://www.anthropic.com/engineering/harness-design-long-running-apps) | Verifiable gates, skeptical evaluation, one feature at a time | `check:registry`, `vibe-verify`, gates above |
+| [gpters Obsidian KB](https://www.gpters.org/nocode/post/knowledge-base-builder-connecting-jH9PdQQcudtVDc0) | `CLAUDE.md` as constitution, structured rules | Agent behavior + `HANDOFF.template.md` |
+| [HKUDS/OpenSpace](https://github.com/HKUDS/OpenSpace) | Self-evolving shared skills | **Not** used — project skills are manual, versioned in git |
+
+> | 출처 | 가져온 아이디어 | 이 저장소 적용 |
+> |------|----------------|----------------|
+> | harness-100 | 트리거·스킬·changelog | CLAUDE.md · 스킬 NOT-trigger |
+> | Anthropic | 검증 게이트·회의적 평가 | check:registry · vibe-verify |
+> | gpters | CLAUDE 헌법·구조화 규칙 | 행동 지침 · HANDOFF 템플릿 |
+> | OpenSpace | 클라우드 자기진화 스킬 | **미도입** — git 수동 스킬 |
+
 ## Commands
 <!-- 명령어 -->
 
@@ -25,11 +133,14 @@ npm run lint                     # Type-check (tsc --noEmit)
 
 npm run clean                    # Remove dist/
 # dist 폴더 삭제
+
+npm run check:registry           # Tool id registry sync (harness check)
+# 도구 id 레지스트리 동기화 검사
 ```
 
-After substantive changes, run `npm run lint` and `npm run build`.
+After substantive changes, run `npm run lint`, `npm run build`, and `npm run check:registry` when tools or routes changed.
 
-> 의미 있는 변경 후에는 `npm run lint`와 `npm run build`를 실행하세요.
+> 의미 있는 변경 후: `npm run lint` · `npm run build` · (도구/라우트 변경 시) `npm run check:registry`
 
 ## Architecture
 <!-- 아키텍처 -->
@@ -137,18 +248,23 @@ Most tools run **entirely in the browser**. Server-side only:
 > - 사용자가 요청할 때만 git commit  
 > - UI 문구는 한국어, 이 문서(AGENTS.md)는 에이전트용으로 영문 유지  
 
-## Prompt template (Claude / Cursor)
-<!-- 프롬프트 예시 (Claude / Cursor 공통) -->
+## Prompt cookbook
+<!-- 프롬프트 작성 가이드 (복사용 템플릿) -->
+
+**Korean-only** copy-paste templates for **Cursor** and **Claude Code**: **[PROMPT.md](./PROMPT.md)**.
+
+> 기능 추가 전 **PROMPT.md** 한글 블록 복사·`[ ]` 채우기. Cursor: `@PROMPT.md` `@AGENTS.md` 권장.
+
+Minimal one-liner:
 
 ```
-{feature} — follow AGENTS.md checklist.
+{feature} — follow AGENTS.md + PROMPT.md + vibe-add-tool checklist.
 Reference: src/pages/tools/{SimilarTool}.tsx
 Register in tools-config + tool-routes; fillViewport like peer if applicable.
+Verify: npm run lint, npm run build, npm run check:registry. No commit unless asked.
 ```
 
-> `{기능} 추가. AGENTS.md 체크리스트 준수.`  
-> `참고: src/pages/tools/{비슷한도구}.tsx`  
-> `tools-config + tool-routes 등록, 필요 시 fillViewport는 유사 도구와 동일`  
+> Cursor: `@PROMPT.md` `@AGENTS.md` · Claude: PROMPT.md + AGENTS.md + vibe-add-tool  
 
 ## File map (quick)
 <!-- 파일 위치 빠른 참조 -->

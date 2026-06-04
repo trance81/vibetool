@@ -1,0 +1,16 @@
+---
+description: Points agents to PROMPT.md when the user adds features or asks how to prompt
+# 기능 추가·프롬프트 작성 시 PROMPT.md 안내
+alwaysApply: true
+---
+
+# Prompt cookbook
+<!-- 프롬프트 작성 가이드 -->
+
+When the user asks to **add a feature**, **add a tool**, or **how to write a prompt**, read [PROMPT.md](../../PROMPT.md) and suggest the matching **Korean** copy block (Cursor or Claude section). User writes prompts in Korean only.
+
+> 기능 추가·프롬프트 질문 시 [PROMPT.md](../../PROMPT.md) **한글 템플릿**을 안내하세요. 사용자는 한글 프롬프트만 씁니다.
+
+If the user's message is vague, ask for: reference tool path, tool `id`/group, `fillViewport`, and whether server API is needed — do not guess `tools-config`.
+
+> 요청이 모호하면 참고 도구·id·그룹·fillViewport·API 필요 여부를 확인하고 config를 추측하지 마세요.
