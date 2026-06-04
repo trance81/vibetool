@@ -11,7 +11,9 @@ import {
   Database, 
   Bookmark,
   Palette,
-  CircleDollarSign
+  CircleDollarSign,
+  FileText,
+  Shapes
 } from "lucide-react";
 
 export interface Tool {
@@ -26,11 +28,11 @@ export interface Tool {
 export const TOOL_GROUPS = [
   {
     title: "이미지/미디어",
-    tools: ["qr-generator", "image-resizer", "color-palette"]
+    tools: ["qr-generator", "image-resizer", "color-palette", "free-icons"]
   },
   {
     title: "텍스트 변환",
-    tools: ["text-case", "sql-formatter", "markdown-table", "emoji-picker"]
+    tools: ["text-case", "sql-formatter", "markdown-table", "markdown-viewer", "emoji-picker"]
   },
   {
     title: "개발 유틸",
@@ -72,6 +74,14 @@ export const ALL_TOOLS: Tool[] = [
     group: "이미지/미디어"
   },
   {
+    id: "free-icons",
+    title: "무료 아이콘",
+    description: "무료 아이콘 라이브러리 탐색 및 SVG·ICO 다운로드.",
+    icon: Shapes,
+    path: "/tools/free-icons",
+    group: "이미지/미디어"
+  },
+  {
     id: "emoji-picker",
     title: "이모지 피커",
     description: "특수문자와 이모지를 빠르게 복사합니다.",
@@ -101,6 +111,14 @@ export const ALL_TOOLS: Tool[] = [
     description: "마크다운 테이블을 시각적으로 편집.",
     icon: Table,
     path: "/tools/markdown-table",
+    group: "텍스트 변환"
+  },
+  {
+    id: "markdown-viewer",
+    title: "마크다운 뷰어",
+    description: "마크다운 작성·수정 및 실시간 미리보기.",
+    icon: FileText,
+    path: "/tools/markdown-viewer",
     group: "텍스트 변환"
   },
   {

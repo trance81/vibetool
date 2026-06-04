@@ -7,9 +7,11 @@ interface ToolLayoutProps {
   children: ReactNode;
   title: string;
   description?: string;
+  /** 툴 영역이 남은 뷰포트를 채우고 메인 스크롤 대신 자식 내부 스크롤을 사용 */
+  fillViewport?: boolean;
 }
 
-export function ToolLayout({ children, title, description }: ToolLayoutProps) {
+export function ToolLayout({ children, title, description, fillViewport }: ToolLayoutProps) {
   const location = useLocation();
   const isHome = location.pathname === "/";
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -35,7 +37,13 @@ export function ToolLayout({ children, title, description }: ToolLayoutProps) {
   });
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans flex flex-col selection:bg-primary/30 selection:text-primary-foreground">
+    <div
+      className={
+        fillViewport
+          ? "flex h-dvh max-h-dvh flex-col overflow-hidden bg-background text-foreground font-sans selection:bg-primary/30 selection:text-primary-foreground"
+          : "flex min-h-screen flex-col bg-background text-foreground font-sans selection:bg-primary/30 selection:text-primary-foreground"
+      }
+    >
       {/* Top Navigation Bar */}
       <header className="h-12 border-b border-border flex items-center justify-between px-4 bg-muted/30 sticky top-0 z-50 backdrop-blur-sm shrink-0">
         <div className="flex items-center gap-2">
@@ -73,17 +81,33 @@ export function ToolLayout({ children, title, description }: ToolLayoutProps) {
         </div>
       </header>
 
-        <main className="flex-1 overflow-auto bg-[radial-gradient(rgba(255,255,255,0.02)_1px,transparent_1px)] [background-size:64px_64px] [background-position:center]">
-        <div className="container py-4 px-4 max-w-5xl mx-auto">
+        <main
+          className={
+            fillViewport
+              ? "flex-1 flex flex-col min-h-0 overflow-hidden bg-[radial-gradient(rgba(255,255,255,0.02)_1px,transparent_1px)] [background-size:64px_64px] [background-position:center]"
+              : "flex-1 overflow-auto bg-[radial-gradient(rgba(255,255,255,0.02)_1px,transparent_1px)] [background-size:64px_64px] [background-position:center]"
+          }
+        >
+        <div
+          className={
+            fillViewport
+              ? "container flex flex-1 flex-col min-h-0 px-4 py-4 max-w-5xl mx-auto w-full"
+              : isHome
+                ? "w-full max-w-[1920px] mx-auto py-4 px-4 sm:px-5 lg:px-6 xl:px-8"
+                : "container py-4 px-4 max-w-5xl mx-auto w-full"
+          }
+        >
           {!isHome && (
-            <div className="mb-6 space-y-1 border-l-2 border-primary pl-4 py-1">
+            <div className={`space-y-1 border-l-2 border-primary pl-4 py-1 shrink-0 ${fillViewport ? "mb-3" : "mb-6"}`}>
               <h1 className="text-xl font-bold tracking-tighter uppercase italic">{title}</h1>
               {description && (
                 <p className="text-muted-foreground text-[11px] font-mono leading-tight">{description}</p>
               )}
             </div>
           )}
-          {children}
+          <div className={fillViewport ? "flex flex-1 flex-col min-h-0" : undefined}>
+            {children}
+          </div>
         </div>
       </main>
       

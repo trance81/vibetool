@@ -6,9 +6,9 @@ import { ShieldCheck } from "lucide-react";
 
 export function Dashboard() {
   return (
-    <div className="grid grid-cols-12 gap-6">
+    <div className="grid grid-cols-12 gap-4 lg:gap-5 xl:gap-6">
       {/* Sidebar Area (Recent/Pinned) */}
-      <aside className="col-span-12 lg:col-span-3 space-y-4">
+      <aside className="col-span-12 lg:col-span-3 xl:col-span-2 2xl:col-span-2 space-y-4">
         <section className="bg-card/30 border border-border rounded-lg p-3 overflow-hidden">
           <h2 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span> 
@@ -47,7 +47,7 @@ export function Dashboard() {
       </aside>
 
       {/* Main Grid Area */}
-      <div className="col-span-12 lg:col-span-9 space-y-6">
+      <div className="col-span-12 lg:col-span-9 xl:col-span-10 2xl:col-span-10 space-y-5 xl:space-y-6 min-w-0">
         {TOOL_GROUPS.map((group, groupIdx) => {
           const groupTools = ALL_TOOLS.filter(t => group.tools.includes(t.id));
           
