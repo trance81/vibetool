@@ -73,7 +73,7 @@ export function ToolLayout({ children, title, description }: ToolLayoutProps) {
         </div>
       </header>
 
-      <main className="flex-1 overflow-auto bg-[radial-gradient(rgba(255,255,255,0.02)_1px,transparent_1px)] [background-size:24px_24px] [background-position:center]">
+        <main className="flex-1 overflow-auto bg-[radial-gradient(rgba(255,255,255,0.02)_1px,transparent_1px)] [background-size:64px_64px] [background-position:center]">
         <div className="container py-4 px-4 max-w-5xl mx-auto">
           {!isHome && (
             <div className="mb-6 space-y-1 border-l-2 border-primary pl-4 py-1">

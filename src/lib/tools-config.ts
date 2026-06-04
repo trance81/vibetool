@@ -10,7 +10,8 @@ import {
   Table, 
   Database, 
   Bookmark,
-  Palette
+  Palette,
+  CircleDollarSign
 } from "lucide-react";
 
 export interface Tool {
@@ -38,6 +39,10 @@ export const TOOL_GROUPS = [
   {
     title: "URL/북마크",
     tools: ["url-shortener", "url-bookmark"]
+  },
+  {
+    title: "일상 유틸",
+    tools: ["currency-converter"]
   }
 ];
 
@@ -137,5 +142,13 @@ export const ALL_TOOLS: Tool[] = [
     icon: Bookmark,
     path: "/tools/url-bookmark",
     group: "URL/북마크"
+  },
+  {
+    id: "currency-converter",
+    title: "환율 계산기",
+    description: "실시간 환율로 통화 금액을 변환합니다.",
+    icon: CircleDollarSign,
+    path: "/tools/currency-converter",
+    group: "일상 유틸"
   }
 ];

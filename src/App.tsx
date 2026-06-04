@@ -15,6 +15,7 @@ import { ImageResizer } from "@/src/pages/tools/ImageResizer";
 import { UrlShortener } from "@/src/pages/tools/UrlShortener";
 import { UrlBookmark } from "@/src/pages/tools/UrlBookmark";
 import { ColorPalette } from "@/src/pages/tools/ColorPalette";
+import { CurrencyConverter } from "@/src/pages/tools/CurrencyConverter";
 
 export default function App() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/tools/url-shortener" element={<ToolLayout title="단축 URL" description="긴 주소를 짧게 줄입니다."><UrlShortener /></ToolLayout>} />
           <Route path="/tools/url-bookmark" element={<ToolLayout title="URL 북마크" description="개발 시 자주 사용하는 유용한 링크들입니다."><UrlBookmark /></ToolLayout>} />
           <Route path="/tools/color-palette" element={<ToolLayout title="색상 파레트" description="색상 선택 및 테마 생성 도구."><ColorPalette /></ToolLayout>} />
+          <Route path="/tools/currency-converter" element={<ToolLayout title="환율 계산기" description="실시간 환율로 통화 금액을 변환합니다."><CurrencyConverter /></ToolLayout>} />
         </Routes>
       </Router>
       <Toaster position="bottom-right" />

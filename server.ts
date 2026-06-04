@@ -2,6 +2,7 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 import path from "path";
 import axios from "axios";
+import { getCurrencies, getExchangeRate } from "./lib/exchange-service";
 
 async function startServer() {
   const app = express();
@@ -23,6 +24,39 @@ async function startServer() {
     } catch (error: any) {
       console.error("Shorten error:", error.response?.data || error.message);
       res.status(500).json({ error: "Failed to shorten URL" });
+    }
+  });
+
+  app.get("/api/exchange/rates", async (req, res) => {
+    const from = String(req.query.from ?? "").toUpperCase();
+    const to = String(req.query.to ?? "").toUpperCase();
+
+    if (!from || !to) {
+      return res.status(400).json({ error: "from and to are required" });
+    }
+
+    try {
+      const result = await getExchangeRate(from, to);
+      res.json({
+        amount: 1,
+        base: from,
+        date: result.date,
+        rates: { [to]: result.rate },
+        source: result.source,
+      });
+    } catch (error: unknown) {
+      console.error("Exchange rate error:", error);
+      res.status(502).json({ error: "Failed to fetch exchange rate" });
+    }
+  });
+
+  app.get("/api/exchange/currencies", async (_req, res) => {
+    try {
+      const currencies = await getCurrencies();
+      res.json(currencies);
+    } catch (error: unknown) {
+      console.error("Exchange currencies error:", error);
+      res.status(502).json({ error: "Failed to fetch currencies" });
     }
   });
 
