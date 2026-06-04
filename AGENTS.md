@@ -183,12 +183,12 @@ When adding a tool:
 ### Dashboard card copy (`tools-config`)
 <!-- 대시보드 카드 문구 -->
 
-- **`title`**: Tool name on the home grid — up to **2 lines** (`line-clamp-2`); the card always reserves a **2-line** slot; shorter titles are **vertically centered** in that slot
-- **`description`**: Copy for `ToolCard` — up to **4 lines** (`line-clamp-4`); the card always reserves a **4-line** slot; text shorter than 2 lines is **vertically centered** in that slot (implemented in `ToolCard.tsx`)
+- **`title`**: Tool name on the home grid — **1 line** (`line-clamp-1`); the card always reserves a **1-line** slot; shorter titles are **vertically centered** in that slot
+- **`description`**: Copy for `ToolCard` — **1 line** (`line-clamp-1`); the card always reserves a **1-line** slot; shorter text is **vertically centered** in that slot (implemented in `ToolCard.tsx`)
 - **`routeDescription`** (optional): Longer line for the tool page header in `ToolLayout`; falls back to `description`
 
-> - **title**: 메인 카드 제목, 최대 2줄. 카드에는 항상 2줄 높이를 확보하고, 한 줄일 때는 그 영역 안에서 세로 가운데 정렬  
-> - **description**: 카드 설명, 최대 4줄. 카드에는 항상 4줄 높이를 확보하고, 2줄 미만이면 그 영역 안에서 세로 가운데 정렬 (`ToolCard.tsx`)  
+> - **title**: 메인 카드 제목, 1줄 (`line-clamp-1`). 카드에는 항상 1줄 높이를 확보  
+> - **description**: 카드 설명, 1줄 (`line-clamp-1`). 카드에는 항상 1줄 높이를 확보 (`ToolCard.tsx`)  
 > - **routeDescription**(선택): 도구 페이지 상단 설명. 없으면 `description` 사용  
 
 ### `fillViewport` layout

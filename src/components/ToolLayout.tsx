@@ -36,10 +36,12 @@ export function ToolLayout({ children, title, description, fillViewport }: ToolL
     day: '2-digit'
   });
 
+  const lockViewport = fillViewport || isHome;
+
   return (
     <div
       className={
-        fillViewport
+        lockViewport
           ? "flex h-dvh max-h-dvh flex-col overflow-hidden bg-background text-foreground font-sans selection:bg-primary/30 selection:text-primary-foreground"
           : "flex min-h-screen flex-col bg-background text-foreground font-sans selection:bg-primary/30 selection:text-primary-foreground"
       }
@@ -83,7 +85,7 @@ export function ToolLayout({ children, title, description, fillViewport }: ToolL
 
         <main
           className={
-            fillViewport
+            lockViewport
               ? "flex-1 flex flex-col min-h-0 overflow-hidden bg-[radial-gradient(rgba(255,255,255,0.02)_1px,transparent_1px)] [background-size:64px_64px] [background-position:center]"
               : "flex-1 overflow-auto bg-[radial-gradient(rgba(255,255,255,0.02)_1px,transparent_1px)] [background-size:64px_64px] [background-position:center]"
           }
@@ -93,7 +95,7 @@ export function ToolLayout({ children, title, description, fillViewport }: ToolL
             fillViewport
               ? "container flex flex-1 flex-col min-h-0 px-4 py-4 max-w-5xl mx-auto w-full"
               : isHome
-                ? "w-full max-w-[1920px] mx-auto py-4 px-4 sm:px-5 lg:px-6 xl:px-8"
+                ? "flex flex-1 flex-col min-h-0 w-full max-w-[1920px] mx-auto py-4 px-4 sm:px-5 lg:px-6 xl:px-8"
                 : "container py-4 px-4 max-w-5xl mx-auto w-full"
           }
         >
@@ -105,7 +107,7 @@ export function ToolLayout({ children, title, description, fillViewport }: ToolL
               )}
             </div>
           )}
-          <div className={fillViewport ? "flex flex-1 flex-col min-h-0" : undefined}>
+          <div className={lockViewport ? "flex flex-1 flex-col min-h-0" : undefined}>
             {children}
           </div>
         </div>
