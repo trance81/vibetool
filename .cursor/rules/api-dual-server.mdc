@@ -1,0 +1,16 @@
+---
+description: Local Express API and Vercel serverless must stay in sync
+# 로컬 Express API와 Vercel 서버리스는 항상 동기화
+globs: server.ts,api/**,lib/**
+alwaysApply: false
+---
+
+# Dual-server API
+<!-- 이중 서버 API -->
+
+Local: `server.ts` + `lib/exchange-service.ts`  
+Production: `api/*.ts` (Vercel)
+<!-- 로컬 server.ts + lib / 배포 api/*.ts -->
+
+Any API behavior change must be applied in **both** places. See [AGENTS.md](../../AGENTS.md).
+<!-- API 변경 시 반드시 양쪽 모두 수정. 자세한 내용 AGENTS.md -->

@@ -1,67 +1,60 @@
-# Vibe Tools 🚀
+# Vibe Tools
+<!-- Developer web utilities collection -->
 
-**Vibe Tools**는 개발자들을 위한 프리미엄 웹 유틸리티 모음 서비스입니다. 세련된 UI와 함께 일상적인 개발 과정에서 자주 필요한 다양한 도구들을 한곳에서 제공합니다.
+개발자용 웹 유틸리티 모음. 대부분의 도구는 **브라우저에서만** 동작합니다.
 
-## ✨ 주요 기능
+> Premium web utilities for developers. Most tools run **only in the browser**.
 
-### 🖼️ 이미지 / 미디어
-- **QR 생성기**: 커스텀 디자인과 스타일이 적용된 QR 코드를 생성합니다.
-- **이미지 리사이저**: 브라우저 내에서 안전하게 이미지 크기를 조절하고 포맷을 변환합니다.
-- **색상 파레트**: 색상을 선택하고 보색 및 유사색 가이드를 제공하며 다양한 형식으로 코드를 복사합니다.
+## 실행
+<!-- Run locally -->
 
-### ✍️ 텍스트 변환
-- **이모지 피커**: 특수문자와 이모지를 빠르게 검색하고 클릭 한 번으로 복사합니다.
-- **텍스트 케이스**: CamelCase, snake_case, PascalCase 등 다양한 텍스트 케이스 변환을 지원합니다.
-- **SQL 포맷터**: 복잡한 SQL 쿼리를 읽기 좋게 정렬합니다.
-- **마크다운 테이블**: 시각적인 표 편집기를 통해 마크다운 테이블 코드를 생성합니다.
+```bash
+npm install --legacy-peer-deps
+npm run dev
+```
 
-### 🛠️ 개발 유틸리티
-- **패스워드 생성기**: 보안성이 높은 무작위 비밀번호를 즉시 생성합니다.
-- **타임스탬프**: Unix 타임스탬프와 사람이 읽을 수 있는 날짜를 상호 변환합니다.
-- **크론 표현식**: Cron식을 시각적으로 해석하고 생성합니다.
+브라우저에서 [http://localhost:3000](http://localhost:3000) 을 엽니다.
 
-### 🔗 URL / 북마크
-- **단축 URL**: 긴 URL 주소를 짧게 줄여줍니다 (is.gd 연동).
-- **URL 북마크**: 개발 시 자주 방문하는 유용한 사이트들을 관리합니다.
+> Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## 🛠️ Tech Stack
+## 도구 목록
+<!-- Tool list -->
 
-- **Core**: React 19, TypeScript, Vite
-- **Styling**: Tailwind CSS, Motion (Framer Motion)
-- **Components**: Shadcn UI, Radix UI, Lucide React
-- **Deployment**: Vercel (Serverless Functions)
+앱 **대시보드**에 등록된 전체 도구가 표시됩니다. (단일 목록은 `src/lib/tools-config.ts`에서 관리합니다.)
 
-## 🚀 로컬 실행 방법
+> All tools appear on the app **dashboard**. Canonical list: `src/lib/tools-config.ts`.
 
-1. 저장소를 클론합니다:
-   ```bash
-   git clone https://github.com/trance81/vibetool.git
-   cd vibetool
-   ```
+## Tech Stack
+<!-- Technology stack -->
 
-2. 의존성 패키지를 설치합니다:
-   ```bash
-   npm install --legacy-peer-deps
-   ```
+- React 19, TypeScript, Vite
+- Tailwind CSS v4, Shadcn UI
+- Vercel (SPA + `api/` 서버리스)
 
-3. 개발 서버를 실행합니다:
-   ```bash
-   npm run dev
-   ```
+> Deployed as SPA on Vercel with serverless `api/` routes.
 
-4. 브라우저에서 `http://localhost:3000` 접속하여 확인합니다.
+## 배포 (Vercel)
+<!-- Deploy on Vercel -->
 
-## 🌐 배포 (Vercel)
+- **Build**: `vite build`
+- **Output**: `dist`
+- **API**: `/api/*` → `api/` 디렉터리
 
-이 프로젝트는 Vercel 배포에 최적화되어 있습니다. GitHub 저장소를 Vercel에 연결하면 자동으로 배포됩니다.
+> Build with `vite build`, output `dist`, API handlers under `api/`.
 
-- **Build Command**: `vite build`
-- **Output Directory**: `dist`
-- **API Routes**: `/api/*` 경로의 요청은 `api/` 디렉토리의 서버리스 함수가 처리합니다.
+## AI / 기여자
+<!-- AI agents & contributors -->
 
-## 🔒 보안 및 개인정보
+에이전트·코딩 규칙은 **[AGENTS.md](./AGENTS.md)** (Claude Code는 [CLAUDE.md](./CLAUDE.md)에서 동일 파일을 참조합니다).
 
-Vibe Tools의 대부분의 기능(URL 단축 제외)은 **브라우저 로컬 환경**에서 실행됩니다. 입력하신 데이터는 서버로 전송되지 않으며, 사용자의 브라우저 내에서만 안전하게 처리됩니다.
+> Coding rules for AI: **[AGENTS.md](./AGENTS.md)**. Claude Code entry: [CLAUDE.md](./CLAUDE.md).
+
+## 개인정보
+<!-- Privacy -->
+
+URL 단축·환율 등 일부 기능만 서버 프록시를 사용합니다. 그 외 입력 데이터는 기본적으로 클라이언트에서만 처리됩니다.
+
+> Only URL shortener and currency converter use server proxies. Other data stays in the client.
 
 ---
 Created by [trance81](https://github.com/trance81)

@@ -1,0 +1,26 @@
+---
+description: Core Vibe Dev Tools habits for every Cursor session
+# 모든 Cursor 세션에 적용되는 기본 규칙
+alwaysApply: true
+---
+
+# Project core
+<!-- 프로젝트 공통 규칙 -->
+
+- Follow [AGENTS.md](../../AGENTS.md) for architecture, commands, and checklists. Do not duplicate AGENTS content here.
+  <!-- 아키텍처·명령·체크리스트는 AGENTS.md만 따르고, 여기에 복사하지 말 것 -->
+
+- Minimal diff; match patterns in neighboring files.
+  <!-- 최소 변경, 주변 파일 패턴과 맞출 것 -->
+
+- Do not run `git commit` unless the user explicitly asks.
+  <!-- 사용자가 요청할 때만 git commit -->
+
+- User-facing UI copy in Korean when adding strings.
+  <!-- UI에 넣는 문구는 한국어 -->
+
+- Dark theme only (`src/index.css` @theme); use Shadcn `components/ui` and `sonner` toasts.
+  <!-- 다크 테마만, Shadcn UI + sonner 토스트 -->
+
+- Path alias `@/*` is project root.
+  <!-- @/* 는 프로젝트 루트 -->
