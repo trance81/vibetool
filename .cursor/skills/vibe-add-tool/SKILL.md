@@ -65,7 +65,7 @@ Read **[AGENTS.md](../../../AGENTS.md)** first (architecture + dashboard copy ru
 
 5. **Routes** — do **not** hand-add `<Route>` in `App.tsx`; `ALL_TOOLS` drives routes via `ToolRoutePage`.
 
-6. **Server API** (only if needed) — update **`server.ts`** and **`api/`** together (dual-server). For large bundled data (ERP pattern), add build script + `vercel.json` `includeFiles` — see AGENTS.md → ERP column lookup.
+6. **Server API** (only if needed) — update **`server.ts`** and **`api/`** together (dual-server).
 
 7. **Verify** — use [vibe-verify](../vibe-verify/SKILL.md) or run:
    ```bash
@@ -100,9 +100,9 @@ Read **[AGENTS.md](../../../AGENTS.md)** first (architecture + dashboard copy ru
 ## fillViewport peers
 <!-- 전체 높이 UI -->
 
-`markdown-viewer`, `emoji-picker`, `free-icons`, `erp-column-lookup` — use `fillViewport: true` for full-height tools with internal scroll only.
+`markdown-viewer`, `emoji-picker`, `free-icons` — use `fillViewport: true` for full-height tools with internal scroll only.
 
-> 위 도구들처럼 **패널 내부만** 스크롤할 때 `fillViewport: true`. 서버 검색 UI는 `erp-column-lookup` 참고.
+> 위 도구들처럼 **패널 내부만** 스크롤할 때 `fillViewport: true`.
 
 ## Do not
 <!-- 금지 -->

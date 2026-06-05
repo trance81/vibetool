@@ -4,9 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npm run build:erp-json && tsx server.ts",
-    "build:erp-json": "node scripts/build-erp-json.mjs",
-    "build": "npm run build:erp-json && vite build",
+    "dev": "tsx server.ts",
+    "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",

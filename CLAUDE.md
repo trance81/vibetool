@@ -90,7 +90,7 @@ Read `SKILL.md` under `.claude/skills/` (mirror: `.cursor/skills/`).
 | 2026-06-02 | Added vibe-* skills + CLAUDE harness pointer | `.claude/skills`, CLAUDE.md | revfactory-style complement |
 | 2026-06-02 | `check:registry`, `vibe-verify`, behavior constitution, HANDOFF template | scripts, docs/agent, skills | External harness references |
 | 2026-06-02 | Added PROMPT.md + prompt-cookbook.mdc | PROMPT.md, .cursor/rules | Feature prompt cookbook |
-| 2026-06-05 | ERP column lookup + JSON build pipeline + Vercel `includeFiles` | AGENTS.md, PROMPT.md, skills, vercel.json | Server-backed internal tool; CSV→JSON at build |
 | 2026-06-05 | Dashboard: 1-line cards, fixed sidebar/footer scroll | ToolCard, Dashboard, ToolLayout | Home layout UX |
+| 2026-06-05 | Removed ERP column lookup (moved to separate project) | tools-config, routes, docs | Scope split |
 
 > **변경 이력:** 하네스 구조·스킬을 바꿀 때마다 이 표에 한 줄 추가하세요.

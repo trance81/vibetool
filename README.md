@@ -36,12 +36,11 @@ All tools appear on the app **dashboard**. Canonical list: `src/lib/tools-config
 ## Deploy (Vercel)
 <!-- 배포 -->
 
-- **Build**: `npm run build` (`build:erp-json` then `vite build`)
+- **Build**: `npm run build`
 - **Output**: `dist`
-- **API**: `/api/*` → `api/` directory
-- **Config**: `vercel.json` (SPA rewrites, ERP `includeFiles` for `src/Files/**`)
+- **API**: `/api/*` → `api/` directory (URL shortener, exchange)
 
-> 빌드 `npm run build`(ERP JSON 생성 포함) · 출력 `dist` · API `api/` · `vercel.json`으로 ERP 데이터 파일 포함
+> 빌드 `npm run build`
 
 ## AI / contributors
 <!-- AI·기여자 -->
@@ -66,9 +65,9 @@ Coding harness: AGENTS.md + optional vibe-* skills. Not a multi-agent team setup
 ## Privacy
 <!-- 개인정보 -->
 
-Server-side: URL shortener, currency converter, and **ERP column lookup** (reads JSON built from CSV in `src/Files/`). Other data stays in the client.
+Only URL shortener and currency converter use server proxies. Other data stays in the client.
 
-> 서버: URL 단축 · 환율 · **ERP 컬럼 조회**(CSV→JSON 빌드 후 서버에서 JSON 읽기). 그 외는 클라이언트.
+> 서버: URL 단축 · 환율. 그 외는 클라이언트.
 
 ---
 Created by [trance81](https://github.com/trance81)

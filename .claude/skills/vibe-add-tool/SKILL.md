@@ -20,12 +20,12 @@ Read **[AGENTS.md](../../../AGENTS.md)** first. Canonical steps: `.cursor/skills
 3. `src/lib/tools-config.ts` — `ALL_TOOLS` + `TOOL_GROUPS`
 4. `src/lib/tool-routes.tsx` — `TOOL_PAGE_REGISTRY`
 5. Do not add manual routes in `App.tsx`
-6. API: `server.ts` + `api/` together if needed (ERP: `build:erp-json` + `vercel.json` — see AGENTS.md)
+6. API: `server.ts` + `api/` together if needed
 7. `npm run lint` && `npm run build` && `npm run check:registry` (or `vibe-verify`)
 
 > 참고 도구 → 페이지 → config → routes → App 수동 Route 금지 → API 양쪽 → 검증
 
 Dashboard: title **1-line** slot, description **1-line** slot (`ToolCard.tsx`).  
-`fillViewport: true` for full-height tools (see `emoji-picker`, `free-icons`, `markdown-viewer`, `erp-column-lookup`).
+`fillViewport: true` for full-height tools (see `emoji-picker`, `free-icons`, `markdown-viewer`).
 
-> 카드: title 1줄 · description 1줄 · 전체 높이 UI는 fillViewport (`erp-column-lookup` = 서버 검색 참고)
+> 카드: title 1줄 · description 1줄 · 전체 높이 UI는 fillViewport

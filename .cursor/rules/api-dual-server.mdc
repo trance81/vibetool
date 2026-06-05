@@ -8,9 +8,9 @@ alwaysApply: false
 # Dual-server API
 <!-- 이중 서버 API -->
 
-Local: `server.ts` + `lib/*` (e.g. `exchange-service.ts`, `erp-column-service.ts`)  
-Production: `api/*.ts` (Vercel) + `vercel.json` when ERP data files or function config change
-<!-- 로컬 server.ts + lib / 배포 api/*.ts · ERP는 vercel.json includeFiles -->
+Local: `server.ts` + `lib/*` (e.g. `exchange-service.ts`)  
+Production: `api/*.ts` (Vercel)
+<!-- 로컬 server.ts + lib / 배포 api/*.ts -->
 
-Any API behavior change must be applied in **both** places. ERP data: CSV → `npm run build:erp-json` → JSON in `src/Files/`. See [AGENTS.md](../../AGENTS.md).
+Any API behavior change must be applied in **both** places. See [AGENTS.md](../../AGENTS.md).
 <!-- API 변경 시 반드시 양쪽 모두 수정. 자세한 내용 AGENTS.md -->

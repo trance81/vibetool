@@ -3,25 +3,5 @@
   "outputDirectory": "dist",
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ],
-  "functions": {
-    "api/erp-columns/meta.ts": {
-      "includeFiles": "api/erp-columns/data/meta.json",
-      "maxDuration": 15
-    },
-    "api/erp-columns/modules.ts": {
-      "includeFiles": "api/erp-columns/data/meta.json",
-      "maxDuration": 15
-    },
-    "api/erp-columns/search.ts": {
-      "includeFiles": "api/erp-columns/data/**",
-      "maxDuration": 60,
-      "memory": 1024
-    },
-    "api/erp-columns/table.ts": {
-      "includeFiles": "api/erp-columns/data/**",
-      "maxDuration": 60,
-      "memory": 1024
-    }
-  }
+  ]
 }

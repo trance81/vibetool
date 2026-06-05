@@ -13,8 +13,6 @@ import { UrlBookmark } from "@/src/pages/tools/UrlBookmark";
 import { ColorPalette } from "@/src/pages/tools/ColorPalette";
 import { FreeIcons } from "@/src/pages/tools/FreeIcons";
 import { CurrencyConverter } from "@/src/pages/tools/CurrencyConverter";
-import { ErpColumnLookup } from "@/src/pages/tools/ErpColumnLookup";
-
 const MarkdownViewer = lazy(() =>
   import("@/src/pages/tools/MarkdownViewer").then((m) => ({
     default: m.MarkdownViewer,
@@ -43,5 +41,4 @@ export const TOOL_PAGE_REGISTRY: Record<string, ToolPageEntry> = {
   "color-palette": { Component: ColorPalette },
   "free-icons": { Component: FreeIcons },
   "currency-converter": { Component: CurrencyConverter },
-  "erp-column-lookup": { Component: ErpColumnLookup },
 };

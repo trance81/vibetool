@@ -125,11 +125,8 @@ npm install --legacy-peer-deps   # Install dependencies (legacy flag required)
 npm run dev                      # Dev server at http://localhost:3000
 # 개발 서버 실행 (http://localhost:3000)
 
-npm run build:erp-json           # CSV → JSON for ERP column API (auto in dev/build)
-# ERP 컬럼 CSV를 JSON으로 변환 (dev/build 시 자동 실행)
-
-npm run build                    # build:erp-json + Vite production build
-# ERP JSON 생성 후 프로덕션 빌드
+npm run build                    # Vite production build
+# 프로덕션 빌드
 
 npm run lint                     # Type-check (tsc --noEmit)
 # 타입 검사
@@ -152,10 +149,10 @@ After substantive changes, run `npm run lint`, `npm run build`, and `npm run che
 <!-- 이중 서버 구조 -->
 
 - **Local dev (`npm run dev`)**: `server.ts` (Express + Vite). API routes on Express, then Vite middleware for the SPA.
-- **Vercel production**: SPA from `dist/`, `api/` as Serverless Functions. See **`vercel.json`** (SPA rewrites, `includeFiles` for ERP JSON).
+- **Vercel production**: SPA from `dist/`, `api/` as Serverless Functions. See **`vercel.json`** (SPA rewrites).
 
 > - **로컬**: `server.ts`가 API를 처리한 뒤 Vite로 프론트를 서빙합니다.  
-> - **배포(Vercel)**: 빌드 결과(`dist`) + `api/` 서버리스 함수. ERP 데이터는 `vercel.json`의 `includeFiles`로 함수 번들에 포함됩니다.
+> - **배포(Vercel)**: 빌드 결과(`dist`) + `api/` 서버리스 함수.
 
 API logic is **duplicated** in `server.ts` (local) and `api/*.ts` (Vercel). **Always update both** when changing server behavior.
 
@@ -201,10 +198,10 @@ Use `fillViewport: true` on the tool entry in `tools-config` when the tool is a 
 
 > 그리드·에디터·분할 화면처럼 **화면 전체 높이**를 쓰는 도구는 `tools-config`에 `fillViewport: true`를 넣습니다. 메인 창이 아니라 **도구 안에서만** 스크롤되게 합니다.
 
-Current tools with `fillViewport`: `markdown-viewer`, `emoji-picker`, `free-icons`, `erp-column-lookup`.  
-New similar tools should match a peer (e.g. emoji-picker ↔ free-icons, erp-column-lookup for search + internal scroll).
+Current tools with `fillViewport`: `markdown-viewer`, `emoji-picker`, `free-icons`.  
+New similar tools should match a peer (e.g. emoji-picker ↔ free-icons).
 
-> 현재 적용: `markdown-viewer`, `emoji-picker`, `free-icons`, `erp-column-lookup`. 검색·내부 스크롤 패널은 `erp-column-lookup` 참고.
+> 현재 적용: `markdown-viewer`, `emoji-picker`, `free-icons`.
 
 Implementation: `ToolLayout` (`src/components/ToolLayout.tsx`) sets `flex-1 min-h-0 overflow-hidden` on the content area; the tool root should use `flex flex-1 flex-col min-h-0` and put `overflow-y-auto` on inner panes only.
 
@@ -235,33 +232,6 @@ On `/`, `ToolLayout` locks the viewport (`h-dvh`): **header + left sidebar + foo
 
 > 홈(`/`)은 헤더·좌측 사이드바·하단 푸터 고정, **카테고리(도구 카드) 영역만** 스크롤됩니다.
 
-### ERP column lookup (`erp-column-lookup`)
-<!-- ERP 컬럼 조회 — 서버 데이터·PIN·JSON 파이프라인 -->
-
-Internal tool: table/column search over ERP metadata. **PIN required on every visit** (no session persistence).
-
-| Concern | Location / behavior |
-|---------|---------------------|
-| UI | `src/pages/tools/ErpColumnLookup.tsx` — `fillViewport: true` |
-| PIN verify | `src/lib/erp-column-pin.ts` (SHA-256 hash only; no plain PIN stored) |
-| Data service | `lib/erp-column-service.ts` — reads **JSON at runtime**, not CSV |
-| Source CSV | `src/Files/ERP_컬럼정보_*.csv` — latest file by timestamp in filename |
-| Build step | `scripts/build-erp-json.mjs` → `api/erp-columns/data/meta.json` + `rows.json` (ASCII paths) |
-| npm scripts | `build:erp-json` runs before `dev` and `build` |
-| Generated JSON | gitignored under `api/erp-columns/data/`; produced on dev/build (Vercel build must run `npm run build`) |
-| Local API | `server.ts` — `/api/erp-columns/{meta,modules,search,table}` |
-| Vercel API | `api/erp-columns/*.ts` + `vercel.json` per-function `includeFiles` (`meta.json` for meta/modules; `data/**` for search/table) |
-
-**When CSV is updated:** drop new `ERP_컬럼정보_YYYYMMDDHHmm.csv` in `src/Files/`, run `npm run build:erp-json` (or `npm run dev` / `npm run build`). Commit the **CSV**; JSON is regenerated.
-
-**API contracts:** `GET /api/erp-columns/meta` → `{ sourceCsv, timestamp, timestampLabel, rowCount, modules }`; search/table use full rows JSON.
-
-> - **PIN**: 도구 진입할 때마다 입력 (sessionStorage 미사용)  
-> - **원본**: `src/Files/ERP_컬럼정보_*.csv` (git)  
-> - **런타임**: `api/erp-columns/data/meta.json` · `rows.json` (gitignore, 빌드·dev 시 생성)  
-> - **CSV 교체**: 새 CSV 추가 후 `npm run build:erp-json` 또는 dev/build 재실행  
-> - **Vercel**: `vercel.json`이 함수별로 필요한 JSON만 `includeFiles`에 포함  
-
 ### Privacy model
 <!-- 개인정보·처리 위치 -->
 
@@ -269,9 +239,8 @@ Most tools run **entirely in the browser**. Server-side only:
 
 - URL shortener (proxies is.gd)
 - Currency converter (proxies exchange APIs: Frankfurter → open.er-api → jsDelivr fallback)
-- ERP column lookup (reads bundled JSON metadata; PIN checked in browser)
 
-> 대부분 **브라우저에서만** 처리합니다. 서버: URL 단축, 환율 프록시, **ERP 컬럼 조회**(번들된 JSON 읽기·PIN은 브라우저에서 검증).
+> 대부분 **브라우저에서만** 처리합니다. 서버: URL 단축, 환율 프록시.
 
 ## AI workflow conventions
 <!-- AI 작업 규칙 -->
@@ -314,9 +283,8 @@ Verify: npm run lint, npm run build, npm run check:registry. No commit unless as
 | Routes | `src/App.tsx` |
 | Shared shell | `src/components/ToolLayout.tsx` |
 | Home grid | `src/pages/Dashboard.tsx`, `src/components/ToolCard.tsx` |
-| Local API | `server.ts`, `lib/exchange-service.ts`, `lib/erp-column-service.ts` |
-| Vercel API | `api/`, `vercel.json` |
-| ERP JSON build | `scripts/build-erp-json.mjs`, `src/Files/` |
+| Local API | `server.ts`, `lib/exchange-service.ts` |
+| Vercel API | `api/` |
 
 | 항목 | 위치 |
 |------------|------|
@@ -325,6 +293,5 @@ Verify: npm run lint, npm run build, npm run check:registry. No commit unless as
 | 라우트 | `src/App.tsx` |
 | 공통 레이아웃 | `src/components/ToolLayout.tsx` |
 | 메인 그리드 | `src/pages/Dashboard.tsx`, `src/components/ToolCard.tsx` |
-| 로컬 API | `server.ts`, `lib/exchange-service.ts`, `lib/erp-column-service.ts` |
-| Vercel API | `api/`, `vercel.json` |
-| ERP JSON 빌드 | `scripts/build-erp-json.mjs`, `src/Files/` |
+| 로컬 API | `server.ts`, `lib/exchange-service.ts` |
+| Vercel API | `api/` |

@@ -14,7 +14,6 @@ import {
   CircleDollarSign,
   FileText,
   Shapes,
-  TableProperties,
 } from "lucide-react";
 
 export interface Tool {
@@ -42,7 +41,7 @@ export const TOOL_GROUPS = [
   },
   {
     title: "개발 유틸",
-    tools: ["password-generator", "timestamp", "cron", "erp-column-lookup"]
+    tools: ["password-generator", "timestamp", "cron"]
   },
   {
     title: "URL/북마크",
@@ -161,17 +160,6 @@ export const ALL_TOOLS: Tool[] = [
     icon: CalendarClock,
     path: "/tools/cron",
     group: "개발 유틸"
-  },
-  {
-    id: "erp-column-lookup",
-    title: "ERP 컬럼 조회",
-    description: "테이블·컬럼 검색 (PIN)",
-    routeDescription:
-      "ERP 컬럼 CSV 기준으로 테이블·컬럼을 검색합니다. 내부용 PIN 필요.",
-    icon: TableProperties,
-    path: "/tools/erp-column-lookup",
-    group: "개발 유틸",
-    fillViewport: true,
   },
   {
     id: "url-shortener",
