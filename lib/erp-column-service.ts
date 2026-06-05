@@ -15,7 +15,7 @@ export type ErpColumnRow = {
 };
 
 export type ErpDatasetMeta = {
-  filename: string;
+  sourceCsv: string;
   timestamp: string;
   timestampLabel: string;
   rowCount: number;
@@ -27,7 +27,8 @@ type ErpDataset = {
   rows: ErpColumnRow[];
 };
 
-const CSV_PATTERN = /^ERP_컬럼정보_(\d+)\.csv$/i;
+const JSON_ROWS_PATTERN = /^ERP_컬럼정보_(\d+)\.json$/i;
+const JSON_META_PATTERN = /^ERP_컬럼정보_(\d+)\.meta\.json$/i;
 
 let cached: ErpDataset | null = null;
 
@@ -39,7 +40,7 @@ function stripQuotes(field: string): string {
   return t;
 }
 
-/** ERP CSV: 10 columns (MODULE_CD … TABLE_NM). Extra columns are ignored. */
+/** Used by build-erp-json and tests. ERP CSV: 10 columns (MODULE_CD … TABLE_NM). */
 export function parseCsvLine(line: string): ErpColumnRow | null {
   if (!line.trim()) return null;
   const parts = line.split("|").map(stripQuotes);
@@ -81,6 +82,48 @@ export function formatTimestamp(ts: string): string {
   return `${y}-${m}-${d} ${h}:${min}`;
 }
 
+function filesDir(rootDir: string): string {
+  return path.join(rootDir, "src", "Files");
+}
+
+export function findLatestErpJsonDataset(rootDir: string): {
+  timestamp: string;
+  rowsPath: string;
+  metaPath: string;
+} | null {
+  const dir = filesDir(rootDir);
+  if (!fs.existsSync(dir)) return null;
+
+  const metaByTs = new Map<string, string>();
+  const rowsByTs = new Map<string, string>();
+
+  for (const name of fs.readdirSync(dir)) {
+    const metaMatch = name.match(JSON_META_PATTERN);
+    if (metaMatch) {
+      metaByTs.set(metaMatch[1], path.join(dir, name));
+      continue;
+    }
+    const rowsMatch = name.match(JSON_ROWS_PATTERN);
+    if (rowsMatch) {
+      rowsByTs.set(rowsMatch[1], path.join(dir, name));
+    }
+  }
+
+  let bestTs: string | null = null;
+  for (const ts of rowsByTs.keys()) {
+    if (!metaByTs.has(ts)) continue;
+    if (!bestTs || ts > bestTs) bestTs = ts;
+  }
+
+  if (!bestTs) return null;
+
+  return {
+    timestamp: bestTs,
+    rowsPath: rowsByTs.get(bestTs)!,
+    metaPath: metaByTs.get(bestTs)!,
+  };
+}
+
 /** Resolve project root (local dev vs Vercel serverless cwd). */
 export function resolveProjectRoot(): string {
   const candidates = [
@@ -89,107 +132,50 @@ export function resolveProjectRoot(): string {
     path.join(process.cwd(), "../.."),
   ];
   for (const root of candidates) {
-    if (findLatestErpCsvFile(root)) return root;
+    if (findLatestErpJsonDataset(root)) return root;
   }
   return process.cwd();
 }
 
-export function findLatestErpCsvFile(rootDir: string): {
-  filePath: string;
-  filename: string;
-  timestamp: string;
-} | null {
-  const dir = path.join(rootDir, "src", "Files");
-  if (!fs.existsSync(dir)) return null;
-
-  let best: { filePath: string; filename: string; timestamp: string } | null =
-    null;
-
-  for (const name of fs.readdirSync(dir)) {
-    const match = name.match(CSV_PATTERN);
-    if (!match) continue;
-    const timestamp = match[1];
-    if (!best || timestamp > best.timestamp) {
-      best = {
-        filePath: path.join(dir, name),
-        filename: name,
-        timestamp,
-      };
-    }
+function readMetaFile(metaPath: string): ErpDatasetMeta {
+  const raw = fs.readFileSync(metaPath, "utf8");
+  const meta = JSON.parse(raw) as ErpDatasetMeta;
+  if (typeof meta.rowCount !== "number" || !Array.isArray(meta.modules)) {
+    throw new Error("ERP meta JSON format is invalid");
   }
+  return meta;
+}
 
-  return best;
+function readRowsFile(rowsPath: string): ErpColumnRow[] {
+  const raw = fs.readFileSync(rowsPath, "utf8");
+  const rows = JSON.parse(raw) as ErpColumnRow[];
+  if (!Array.isArray(rows)) {
+    throw new Error("ERP rows JSON format is invalid");
+  }
+  return rows;
 }
 
 function loadDataset(rootDir: string): ErpDataset {
-  const latest = findLatestErpCsvFile(rootDir);
+  const latest = findLatestErpJsonDataset(rootDir);
   if (!latest) {
-    throw new Error("ERP column CSV not found in src/Files");
+    throw new Error(
+      "ERP column JSON not found. Run: npm run build:erp-json",
+    );
   }
 
   if (
     cached &&
-    cached.meta.filename === latest.filename &&
+    cached.meta.timestamp === latest.timestamp &&
     cached.rows.length > 0
   ) {
-    if (!cached.meta.modules?.length) {
-      cached.meta.modules = collectModuleCodes(cached.rows);
-    }
     return cached;
   }
 
-  const raw = fs.readFileSync(latest.filePath, "utf8");
-  const lines = raw.split(/\r?\n/);
-  const rows: ErpColumnRow[] = [];
+  const meta = readMetaFile(latest.metaPath);
+  const rows = readRowsFile(latest.rowsPath);
 
-  for (let i = 0; i < lines.length; i++) {
-    const row = parseCsvLine(lines[i]);
-    if (row) rows.push(row);
-  }
-
-  cached = {
-    meta: {
-      filename: latest.filename,
-      timestamp: latest.timestamp,
-      timestampLabel: formatTimestamp(latest.timestamp),
-      rowCount: rows.length,
-      modules: collectModuleCodes(rows),
-    },
-    rows,
-  };
-
+  cached = { meta, rows };
   return cached;
-}
-
-/** Lightweight CSV scan for meta/modules (avoids building full row cache). */
-function scanCsvMeta(
-  filePath: string,
-  filename: string,
-  timestamp: string,
-): ErpDatasetMeta {
-  const raw = fs.readFileSync(filePath, "utf8");
-  const modules = new Set<string>();
-  let rowCount = 0;
-
-  for (const line of raw.split(/\r?\n/)) {
-    if (!line.trim()) continue;
-    const parts = line.split("|");
-    if (parts.length < 10) continue;
-    const moduleCd = stripQuotes(parts[0]);
-    const colNm = stripQuotes(parts[1]);
-    if (colNm === "COL_NM" || moduleCd === "MODULE_CD") continue;
-    rowCount++;
-    const m = moduleCd.trim();
-    if (m) modules.add(m);
-  }
-
-  return {
-    filename,
-    timestamp,
-    timestampLabel: formatTimestamp(timestamp),
-    rowCount,
-    modules: [...modules].sort((a, b) => a.localeCompare(b)),
-  };
 }
 
 function collectModuleCodes(rows: ErpColumnRow[]): string[] {
@@ -207,11 +193,15 @@ export function getErpDatasetMeta(
   if (cached && cached.rows.length > 0) {
     return { ...cached.meta, modules: collectModuleCodes(cached.rows) };
   }
-  const latest = findLatestErpCsvFile(rootDir);
+
+  const latest = findLatestErpJsonDataset(rootDir);
   if (!latest) {
-    throw new Error("ERP column CSV not found in src/Files");
+    throw new Error(
+      "ERP column JSON not found. Run: npm run build:erp-json",
+    );
   }
-  return scanCsvMeta(latest.filePath, latest.filename, latest.timestamp);
+
+  return readMetaFile(latest.metaPath);
 }
 
 export function getErpModuleCodes(
@@ -278,7 +268,7 @@ export function getErpTableColumns(
   return { tableId: id, tableNm, rows: matched };
 }
 
-/** Test-only: clear in-memory cache after CSV swap */
+/** Test-only: clear in-memory cache after dataset swap */
 export function clearErpDatasetCache(): void {
   cached = null;
 }

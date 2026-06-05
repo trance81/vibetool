@@ -6,3 +6,7 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# ERP runtime JSON (generated from CSV via npm run build:erp-json)
+src/Files/ERP_컬럼정보_*.json
+src/Files/ERP_컬럼정보_*.meta.json

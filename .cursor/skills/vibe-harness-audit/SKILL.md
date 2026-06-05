@@ -59,14 +59,14 @@ Report: missing keys, orphan keys, path duplicates.
 ### 2. fillViewport consistency
 <!-- fillViewport -->
 
-Tools with full-height UI should have `fillViewport: true` in `tools-config` and match peers (`emoji-picker`, `free-icons`, `markdown-viewer`).
+Tools with full-height UI should have `fillViewport: true` in `tools-config` and match peers (`emoji-picker`, `free-icons`, `markdown-viewer`, `erp-column-lookup`).
 
 > 전체 높이 UI는 `fillViewport: true` 및 동료 도구와 패턴 일치
 
 ### 3. Dual-server API
 <!-- 이중 서버 -->
 
-If `server.ts` exposes a route, the same behavior must exist under `api/`. See [AGENTS.md](../../../AGENTS.md) dual-server section.
+If `server.ts` exposes a route, the same behavior must exist under `api/`. ERP routes need `build:erp-json` + `vercel.json` `includeFiles`. See [AGENTS.md](../../../AGENTS.md) dual-server and ERP sections.
 
 > `server.ts`에 있으면 `api/`에도 동일 동작
 

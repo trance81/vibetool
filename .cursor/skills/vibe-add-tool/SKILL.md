@@ -58,14 +58,14 @@ Read **[AGENTS.md](../../../AGENTS.md)** first (architecture + dashboard copy ru
 2. **Create** `src/pages/tools/{Name}.tsx` — match layout, `ToolLayout` child uses `flex flex-1 flex-col min-h-0` when `fillViewport` applies.
 
 3. **Register metadata** in `src/lib/tools-config.ts`:
-   - `ALL_TOOLS` entry: `id`, `title`, `description` (dashboard: **4-line slot**, short copy OK), optional `routeDescription`, `path`, `group`, optional `fillViewport`
+   - `ALL_TOOLS` entry: `id`, `title`, `description` (dashboard: **1-line slot**), optional `routeDescription`, `path`, `group`, optional `fillViewport`
    - `TOOL_GROUPS` includes the tool `id`
 
 4. **Register component** in `src/lib/tool-routes.tsx` → `TOOL_PAGE_REGISTRY` (same `id` as config). Set `lazy: true` only if the page uses `React.lazy` (see `markdown-viewer`).
 
 5. **Routes** — do **not** hand-add `<Route>` in `App.tsx`; `ALL_TOOLS` drives routes via `ToolRoutePage`.
 
-6. **Server API** (only if needed) — update **`server.ts`** and **`api/`** together (dual-server).
+6. **Server API** (only if needed) — update **`server.ts`** and **`api/`** together (dual-server). For large bundled data (ERP pattern), add build script + `vercel.json` `includeFiles` — see AGENTS.md → ERP column lookup.
 
 7. **Verify** — use [vibe-verify](../vibe-verify/SKILL.md) or run:
    ```bash
@@ -87,22 +87,22 @@ Read **[AGENTS.md](../../../AGENTS.md)** first (architecture + dashboard copy ru
 
 | Field | Rule |
 |-------|------|
-| `title` | Max 2 lines on card (`line-clamp-2`) |
-| `description` | Max 4 lines on card (`line-clamp-4`); shorter text is vertically centered in the slot |
+| `title` | 1 line on card (`line-clamp-1`) |
+| `description` | 1 line on card (`line-clamp-1`) |
 | `routeDescription` | Optional longer header on the tool page |
 
 > | 필드 | 규칙 |
 > |------|------|
-> | `title` | 카드 제목 최대 2줄 |
-> | `description` | 카드 설명 최대 4줄 (짧으면 슬롯 안 세로 가운데) |
+> | `title` | 카드 제목 1줄 |
+> | `description` | 카드 설명 1줄 |
 > | `routeDescription` | 도구 페이지 상단 긴 설명(선택) |
 
 ## fillViewport peers
 <!-- 전체 높이 UI -->
 
-`markdown-viewer`, `emoji-picker`, `free-icons` — use `fillViewport: true` for full-height tools with internal scroll only.
+`markdown-viewer`, `emoji-picker`, `free-icons`, `erp-column-lookup` — use `fillViewport: true` for full-height tools with internal scroll only.
 
-> 위 세 도구와 같이 **패널 내부만** 스크롤할 때 `fillViewport: true`.
+> 위 도구들처럼 **패널 내부만** 스크롤할 때 `fillViewport: true`. 서버 검색 UI는 `erp-column-lookup` 참고.
 
 ## Do not
 <!-- 금지 -->

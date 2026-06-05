@@ -46,7 +46,7 @@ type ErpColumnRow = {
 };
 
 type Meta = {
-  filename: string;
+  sourceCsv: string;
   timestamp: string;
   timestampLabel: string;
   rowCount: number;
@@ -131,7 +131,7 @@ export function ErpColumnLookup() {
         return;
       }
       const data: Meta = {
-        filename: body.filename,
+        sourceCsv: body.sourceCsv,
         timestamp: body.timestamp,
         timestampLabel: body.timestampLabel,
         rowCount: body.rowCount,
@@ -292,7 +292,7 @@ export function ErpColumnLookup() {
                 {meta.timestampLabel}
               </Badge>
               <span className="text-muted-foreground font-mono text-[10px]">
-                {meta.filename}
+                {meta.sourceCsv}
               </span>
               <span className="text-muted-foreground text-[10px]">
                 {meta.rowCount.toLocaleString()}행

@@ -16,7 +16,7 @@ Summarize findings in **Korean** for the user: OK / drift / fix per file.
 
 > 결과는 사용자에게 **한국어**로 요약
 
-Verify: `ALL_TOOLS` ids ↔ `TOOL_PAGE_REGISTRY`, `TOOL_GROUPS`, dual-server parity, CLAUDE.md changelog, no AGENTS duplication in rules.
+Verify: `ALL_TOOLS` ids ↔ `TOOL_PAGE_REGISTRY`, `TOOL_GROUPS`, dual-server parity (incl. ERP + `vercel.json`), CLAUDE.md changelog, no AGENTS duplication in rules.
 
 > config↔routes↔groups · 이중 서버 · CLAUDE 이력 · rules에 AGENTS 전문 복사 없음
 
