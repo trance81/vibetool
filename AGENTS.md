@@ -246,11 +246,11 @@ Internal tool: table/column search over ERP metadata. **PIN required on every vi
 | PIN verify | `src/lib/erp-column-pin.ts` (SHA-256 hash only; no plain PIN stored) |
 | Data service | `lib/erp-column-service.ts` — reads **JSON at runtime**, not CSV |
 | Source CSV | `src/Files/ERP_컬럼정보_*.csv` — latest file by timestamp in filename |
-| Build step | `scripts/build-erp-json.mjs` → `ERP_컬럼정보_{ts}.json` + `.meta.json` |
+| Build step | `scripts/build-erp-json.mjs` → `api/erp-columns/data/meta.json` + `rows.json` (ASCII paths) |
 | npm scripts | `build:erp-json` runs before `dev` and `build` |
-| Generated JSON | gitignored; produced on dev/build (Vercel build must run `npm run build`) |
+| Generated JSON | gitignored under `api/erp-columns/data/`; produced on dev/build (Vercel build must run `npm run build`) |
 | Local API | `server.ts` — `/api/erp-columns/{meta,modules,search,table}` |
-| Vercel API | `api/erp-columns/*.ts` + `vercel.json` `includeFiles: "src/Files/**"` |
+| Vercel API | `api/erp-columns/*.ts` + `vercel.json` per-function `includeFiles` (`meta.json` for meta/modules; `data/**` for search/table) |
 
 **When CSV is updated:** drop new `ERP_컬럼정보_YYYYMMDDHHmm.csv` in `src/Files/`, run `npm run build:erp-json` (or `npm run dev` / `npm run build`). Commit the **CSV**; JSON is regenerated.
 
@@ -258,9 +258,9 @@ Internal tool: table/column search over ERP metadata. **PIN required on every vi
 
 > - **PIN**: 도구 진입할 때마다 입력 (sessionStorage 미사용)  
 > - **원본**: `src/Files/ERP_컬럼정보_*.csv` (git)  
-> - **런타임**: `build:erp-json`이 만든 `.json` / `.meta.json` (gitignore, 빌드·dev 시 생성)  
+> - **런타임**: `api/erp-columns/data/meta.json` · `rows.json` (gitignore, 빌드·dev 시 생성)  
 > - **CSV 교체**: 새 CSV 추가 후 `npm run build:erp-json` 또는 dev/build 재실행  
-> - **Vercel**: `vercel.json`으로 JSON 파일을 서버리스 함수에 포함  
+> - **Vercel**: `vercel.json`이 함수별로 필요한 JSON만 `includeFiles`에 포함  
 
 ### Privacy model
 <!-- 개인정보·처리 위치 -->

@@ -44,9 +44,9 @@ Any API behavior change must be applied in **both**:
 | `GET /api/erp-columns/search?q=&modules=&limit=` | Column/table search |
 | `GET /api/erp-columns/table?tableId=` | Table definition rows |
 
-**Data pipeline:** Source CSV in `src/Files/ERP_컬럼정보_*.csv` → `npm run build:erp-json` → `ERP_컬럼정보_{ts}.json` + `.meta.json`. Runtime reads JSON via `lib/erp-column-service.ts` (not CSV).
+**Data pipeline:** Source CSV in `src/Files/ERP_컬럼정보_*.csv` → `npm run build:erp-json` → `api/erp-columns/data/meta.json` + `rows.json`. Runtime reads JSON via `lib/erp-column-service.ts` (not CSV).
 
-**Vercel:** `vercel.json` must include `includeFiles: "src/Files/**"` on `api/erp-columns/*.ts`. JSON is generated during `npm run build` on deploy.
+**Vercel:** `vercel.json` uses per-function `includeFiles` (`meta.json` for meta/modules; `data/**` for search/table). JSON is generated during `npm run build` on deploy.
 
 **CSV update:** Add new CSV → run `build:erp-json` (or `dev`/`build`) → verify APIs. Commit CSV; generated JSON is gitignored.
 

@@ -8,5 +8,7 @@ coverage/
 !.env.example
 
 # ERP runtime JSON (generated from CSV via npm run build:erp-json)
+api/erp-columns/data/meta.json
+api/erp-columns/data/rows.json
 src/Files/ERP_컬럼정보_*.json
 src/Files/ERP_컬럼정보_*.meta.json

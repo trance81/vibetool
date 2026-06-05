@@ -1,6 +1,6 @@
 /**
  * Converts the latest ERP_컬럼정보_*.csv to JSON for runtime API reads.
- * Skips if both JSON outputs are newer than the source CSV.
+ * Output: api/erp-columns/data/meta.json + rows.json (ASCII paths for Vercel).
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const FILES_DIR = path.join(ROOT, "src", "Files");
+const DATA_DIR = path.join(ROOT, "api", "erp-columns", "data");
 const CSV_PATTERN = /^ERP_컬럼정보_(\d+)\.csv$/i;
 
 function stripQuotes(field) {
@@ -72,12 +73,13 @@ function findLatestCsv() {
   return best;
 }
 
-function isUpToDate(csvPath, rowsPath, metaPath) {
-  if (!fs.existsSync(rowsPath) || !fs.existsSync(metaPath)) return false;
+function isUpToDate(csvPath, metaPath, rowsPath) {
+  if (!fs.existsSync(metaPath) || !fs.existsSync(rowsPath)) return false;
   const csvMtime = fs.statSync(csvPath).mtimeMs;
-  const rowsMtime = fs.statSync(rowsPath).mtimeMs;
-  const metaMtime = fs.statSync(metaPath).mtimeMs;
-  return rowsMtime >= csvMtime && metaMtime >= csvMtime;
+  return (
+    fs.statSync(metaPath).mtimeMs >= csvMtime &&
+    fs.statSync(rowsPath).mtimeMs >= csvMtime
+  );
 }
 
 function main() {
@@ -87,12 +89,13 @@ function main() {
     return;
   }
 
-  const base = `ERP_컬럼정보_${latest.timestamp}`;
-  const rowsPath = path.join(FILES_DIR, `${base}.json`);
-  const metaPath = path.join(FILES_DIR, `${base}.meta.json`);
+  fs.mkdirSync(DATA_DIR, { recursive: true });
 
-  if (isUpToDate(latest.csvPath, rowsPath, metaPath)) {
-    console.log(`build:erp-json — up to date (${base}.json)`);
+  const metaPath = path.join(DATA_DIR, "meta.json");
+  const rowsPath = path.join(DATA_DIR, "rows.json");
+
+  if (isUpToDate(latest.csvPath, metaPath, rowsPath)) {
+    console.log("build:erp-json — up to date (api/erp-columns/data/)");
     return;
   }
 
@@ -117,11 +120,11 @@ function main() {
   };
 
   fs.writeFileSync(rowsPath, JSON.stringify(rows));
-  fs.writeFileSync(metaPath, JSON.stringify(meta, null, 0));
+  fs.writeFileSync(metaPath, JSON.stringify(meta));
 
   const rowsMb = (fs.statSync(rowsPath).size / 1024 / 1024).toFixed(2);
   console.log(
-    `build:erp-json — wrote ${base}.json (${rows.length} rows, ${rowsMb} MB) + ${base}.meta.json`,
+    `build:erp-json — wrote api/erp-columns/data/ (${rows.length} rows, ${rowsMb} MB)`,
   );
 }
 

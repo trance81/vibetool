@@ -27,8 +27,14 @@ type ErpDataset = {
   rows: ErpColumnRow[];
 };
 
-const JSON_ROWS_PATTERN = /^ERP_컬럼정보_(\d+)\.json$/i;
-const JSON_META_PATTERN = /^ERP_컬럼정보_(\d+)\.meta\.json$/i;
+type ErpDatasetPaths = {
+  metaPath: string;
+  rowsPath: string;
+  timestamp: string;
+};
+
+const LEGACY_JSON_ROWS_PATTERN = /^ERP_컬럼정보_(\d+)\.json$/i;
+const LEGACY_JSON_META_PATTERN = /^ERP_컬럼정보_(\d+)\.meta\.json$/i;
 
 let cached: ErpDataset | null = null;
 
@@ -82,28 +88,45 @@ export function formatTimestamp(ts: string): string {
   return `${y}-${m}-${d} ${h}:${min}`;
 }
 
-function filesDir(rootDir: string): string {
-  return path.join(rootDir, "src", "Files");
+function rootCandidates(): string[] {
+  return [
+    process.cwd(),
+    path.join(process.cwd(), ".."),
+    path.join(process.cwd(), "../.."),
+  ];
 }
 
-export function findLatestErpJsonDataset(rootDir: string): {
-  timestamp: string;
-  rowsPath: string;
-  metaPath: string;
-} | null {
-  const dir = filesDir(rootDir);
+function canonicalPaths(rootDir: string): ErpDatasetPaths | null {
+  const dataDir = path.join(rootDir, "api", "erp-columns", "data");
+  const metaPath = path.join(dataDir, "meta.json");
+  const rowsPath = path.join(dataDir, "rows.json");
+  if (!fs.existsSync(metaPath) || !fs.existsSync(rowsPath)) return null;
+
+  try {
+    const meta = JSON.parse(
+      fs.readFileSync(metaPath, "utf8"),
+    ) as ErpDatasetMeta;
+    if (typeof meta.timestamp !== "string") return null;
+    return { metaPath, rowsPath, timestamp: meta.timestamp };
+  } catch {
+    return null;
+  }
+}
+
+function legacyPaths(rootDir: string): ErpDatasetPaths | null {
+  const dir = path.join(rootDir, "src", "Files");
   if (!fs.existsSync(dir)) return null;
 
   const metaByTs = new Map<string, string>();
   const rowsByTs = new Map<string, string>();
 
   for (const name of fs.readdirSync(dir)) {
-    const metaMatch = name.match(JSON_META_PATTERN);
+    const metaMatch = name.match(LEGACY_JSON_META_PATTERN);
     if (metaMatch) {
       metaByTs.set(metaMatch[1], path.join(dir, name));
       continue;
     }
-    const rowsMatch = name.match(JSON_ROWS_PATTERN);
+    const rowsMatch = name.match(LEGACY_JSON_ROWS_PATTERN);
     if (rowsMatch) {
       rowsByTs.set(rowsMatch[1], path.join(dir, name));
     }
@@ -124,15 +147,28 @@ export function findLatestErpJsonDataset(rootDir: string): {
   };
 }
 
+function resolveDatasetPaths(rootDir?: string): ErpDatasetPaths {
+  const roots = rootDir ? [rootDir, ...rootCandidates()] : rootCandidates();
+
+  for (const root of roots) {
+    const canonical = canonicalPaths(root);
+    if (canonical) return canonical;
+  }
+
+  for (const root of roots) {
+    const legacy = legacyPaths(root);
+    if (legacy) return legacy;
+  }
+
+  throw new Error(
+    "ERP column JSON not found. Run: npm run build:erp-json",
+  );
+}
+
 /** Resolve project root (local dev vs Vercel serverless cwd). */
 export function resolveProjectRoot(): string {
-  const candidates = [
-    process.cwd(),
-    path.join(process.cwd(), ".."),
-    path.join(process.cwd(), "../.."),
-  ];
-  for (const root of candidates) {
-    if (findLatestErpJsonDataset(root)) return root;
+  for (const root of rootCandidates()) {
+    if (canonicalPaths(root) || legacyPaths(root)) return root;
   }
   return process.cwd();
 }
@@ -155,24 +191,19 @@ function readRowsFile(rowsPath: string): ErpColumnRow[] {
   return rows;
 }
 
-function loadDataset(rootDir: string): ErpDataset {
-  const latest = findLatestErpJsonDataset(rootDir);
-  if (!latest) {
-    throw new Error(
-      "ERP column JSON not found. Run: npm run build:erp-json",
-    );
-  }
+function loadDataset(rootDir?: string): ErpDataset {
+  const paths = resolveDatasetPaths(rootDir);
 
   if (
     cached &&
-    cached.meta.timestamp === latest.timestamp &&
+    cached.meta.timestamp === paths.timestamp &&
     cached.rows.length > 0
   ) {
     return cached;
   }
 
-  const meta = readMetaFile(latest.metaPath);
-  const rows = readRowsFile(latest.rowsPath);
+  const meta = readMetaFile(paths.metaPath);
+  const rows = readRowsFile(paths.rowsPath);
 
   cached = { meta, rows };
   return cached;
@@ -194,14 +225,8 @@ export function getErpDatasetMeta(
     return { ...cached.meta, modules: collectModuleCodes(cached.rows) };
   }
 
-  const latest = findLatestErpJsonDataset(rootDir);
-  if (!latest) {
-    throw new Error(
-      "ERP column JSON not found. Run: npm run build:erp-json",
-    );
-  }
-
-  return readMetaFile(latest.metaPath);
+  const paths = resolveDatasetPaths(rootDir);
+  return readMetaFile(paths.metaPath);
 }
 
 export function getErpModuleCodes(
@@ -231,7 +256,7 @@ export function searchErpColumns(
   const q = query.trim().toLowerCase();
   if (!q) return [];
 
-  const { rows } = loadDataset(rootDir ?? resolveProjectRoot());
+  const { rows } = loadDataset(rootDir);
   const out: ErpColumnRow[] = [];
 
   for (let i = 0; i < rows.length && out.length < limit; i++) {
@@ -259,7 +284,7 @@ export function searchErpColumns(
 
 export function getErpTableColumns(
   tableId: string,
-  rootDir: string = resolveProjectRoot(),
+  rootDir?: string,
 ): { tableId: string; tableNm: string; rows: ErpColumnRow[] } {
   const id = tableId.trim().toUpperCase();
   const { rows } = loadDataset(rootDir);
