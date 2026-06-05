@@ -71,6 +71,18 @@ function cellOrDash(value: string) {
   return value?.trim() ? value : "—";
 }
 
+async function readApiJson<T>(res: Response): Promise<T> {
+  const text = await res.text();
+  const contentType = res.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) {
+    const preview = text.slice(0, 120).replace(/\s+/g, " ").trim();
+    throw new Error(
+      `API가 JSON이 아닌 응답을 반환했습니다 (${res.status}): ${preview}`,
+    );
+  }
+  return JSON.parse(text) as T;
+}
+
 export function ErpColumnLookup() {
   const [unlocked, setUnlocked] = useState(false);
   const [pin, setPin] = useState("");
@@ -104,7 +116,7 @@ export function ErpColumnLookup() {
     setMetaError(null);
     try {
       const res = await fetch("/api/erp-columns/meta");
-      const body = (await res.json()) as Meta & { error?: string };
+      const body = await readApiJson<Meta & { error?: string }>(res);
       if (!res.ok) {
         throw new Error(body.error ?? `meta HTTP ${res.status}`);
       }
@@ -144,9 +156,10 @@ export function ErpColumnLookup() {
         err instanceof Error && err.message
           ? err.message
           : "네트워크 오류";
-      setMetaError(
-        `ERP 컬럼 데이터를 불러오지 못했습니다. (${hint}) · npm run dev 로 실행 중인지 확인하세요.`,
-      );
+      const envHint = import.meta.env.DEV
+        ? " · 로컬에서는 npm run dev 로 실행하세요."
+        : " · Vercel이면 재배포 후 Function 로그를 확인하세요.";
+      setMetaError(`ERP 컬럼 데이터를 불러오지 못했습니다. (${hint})${envHint}`);
       setMeta(null);
     } finally {
       setMetaLoading(false);

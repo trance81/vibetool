@@ -1,0 +1,25 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ],
+  "functions": {
+    "api/erp-columns/meta.ts": {
+      "includeFiles": "src/Files/**",
+      "maxDuration": 60
+    },
+    "api/erp-columns/modules.ts": {
+      "includeFiles": "src/Files/**",
+      "maxDuration": 60
+    },
+    "api/erp-columns/search.ts": {
+      "includeFiles": "src/Files/**",
+      "maxDuration": 60
+    },
+    "api/erp-columns/table.ts": {
+      "includeFiles": "src/Files/**",
+      "maxDuration": 60
+    }
+  }
+}

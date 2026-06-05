@@ -81,6 +81,19 @@ export function formatTimestamp(ts: string): string {
   return `${y}-${m}-${d} ${h}:${min}`;
 }
 
+/** Resolve project root (local dev vs Vercel serverless cwd). */
+export function resolveProjectRoot(): string {
+  const candidates = [
+    process.cwd(),
+    path.join(process.cwd(), ".."),
+    path.join(process.cwd(), "../.."),
+  ];
+  for (const root of candidates) {
+    if (findLatestErpCsvFile(root)) return root;
+  }
+  return process.cwd();
+}
+
 export function findLatestErpCsvFile(rootDir: string): {
   filePath: string;
   filename: string;
@@ -148,6 +161,37 @@ function loadDataset(rootDir: string): ErpDataset {
   return cached;
 }
 
+/** Lightweight CSV scan for meta/modules (avoids building full row cache). */
+function scanCsvMeta(
+  filePath: string,
+  filename: string,
+  timestamp: string,
+): ErpDatasetMeta {
+  const raw = fs.readFileSync(filePath, "utf8");
+  const modules = new Set<string>();
+  let rowCount = 0;
+
+  for (const line of raw.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    const parts = line.split("|");
+    if (parts.length < 10) continue;
+    const moduleCd = stripQuotes(parts[0]);
+    const colNm = stripQuotes(parts[1]);
+    if (colNm === "COL_NM" || moduleCd === "MODULE_CD") continue;
+    rowCount++;
+    const m = moduleCd.trim();
+    if (m) modules.add(m);
+  }
+
+  return {
+    filename,
+    timestamp,
+    timestampLabel: formatTimestamp(timestamp),
+    rowCount,
+    modules: [...modules].sort((a, b) => a.localeCompare(b)),
+  };
+}
+
 function collectModuleCodes(rows: ErpColumnRow[]): string[] {
   const set = new Set<string>();
   for (const r of rows) {
@@ -157,14 +201,23 @@ function collectModuleCodes(rows: ErpColumnRow[]): string[] {
   return [...set].sort((a, b) => a.localeCompare(b));
 }
 
-export function getErpDatasetMeta(rootDir: string = process.cwd()): ErpDatasetMeta {
-  const { meta, rows } = loadDataset(rootDir);
-  return { ...meta, modules: collectModuleCodes(rows) };
+export function getErpDatasetMeta(
+  rootDir: string = resolveProjectRoot(),
+): ErpDatasetMeta {
+  if (cached && cached.rows.length > 0) {
+    return { ...cached.meta, modules: collectModuleCodes(cached.rows) };
+  }
+  const latest = findLatestErpCsvFile(rootDir);
+  if (!latest) {
+    throw new Error("ERP column CSV not found in src/Files");
+  }
+  return scanCsvMeta(latest.filePath, latest.filename, latest.timestamp);
 }
 
-export function getErpModuleCodes(rootDir: string = process.cwd()): string[] {
-  const { rows } = loadDataset(rootDir);
-  return collectModuleCodes(rows);
+export function getErpModuleCodes(
+  rootDir: string = resolveProjectRoot(),
+): string[] {
+  return getErpDatasetMeta(rootDir).modules;
 }
 
 export function parseModulesFilter(
@@ -181,14 +234,14 @@ export function parseModulesFilter(
 
 export function searchErpColumns(
   query: string,
-  rootDir: string = process.cwd(),
+  rootDir?: string,
   limit = 200,
   modulesFilter: Set<string> | null = null,
 ): ErpColumnRow[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];
 
-  const { rows } = loadDataset(rootDir);
+  const { rows } = loadDataset(rootDir ?? resolveProjectRoot());
   const out: ErpColumnRow[] = [];
 
   for (let i = 0; i < rows.length && out.length < limit; i++) {
@@ -216,7 +269,7 @@ export function searchErpColumns(
 
 export function getErpTableColumns(
   tableId: string,
-  rootDir: string = process.cwd(),
+  rootDir: string = resolveProjectRoot(),
 ): { tableId: string; tableNm: string; rows: ErpColumnRow[] } {
   const id = tableId.trim().toUpperCase();
   const { rows } = loadDataset(rootDir);

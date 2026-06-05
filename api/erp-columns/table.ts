@@ -12,10 +12,12 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const result = getErpTableColumns(tableId, process.cwd());
+    const result = getErpTableColumns(tableId);
     res.json(result);
   } catch (error: unknown) {
     console.error("ERP table error:", error);
-    res.status(500).json({ error: "Failed to load table columns" });
+    const message =
+      error instanceof Error ? error.message : "Failed to load table columns";
+    res.status(500).json({ error: message });
   }
 }

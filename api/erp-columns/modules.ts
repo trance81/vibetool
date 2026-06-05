@@ -7,9 +7,11 @@ export default function handler(_req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    res.json({ modules: getErpModuleCodes(process.cwd()) });
+    res.json({ modules: getErpModuleCodes() });
   } catch (error: unknown) {
     console.error("ERP modules error:", error);
-    res.status(500).json({ error: "Failed to load ERP modules" });
+    const message =
+      error instanceof Error ? error.message : "Failed to load ERP modules";
+    res.status(500).json({ error: message });
   }
 }

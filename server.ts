@@ -72,7 +72,7 @@ async function startServer() {
 
   app.get("/api/erp-columns/meta", (_req, res) => {
     try {
-      res.json(getErpDatasetMeta(process.cwd()));
+      res.json(getErpDatasetMeta());
     } catch (error: unknown) {
       console.error("ERP meta error:", error);
       res.status(500).json({ error: "Failed to load ERP column metadata" });
@@ -81,7 +81,7 @@ async function startServer() {
 
   app.get("/api/erp-columns/modules", (_req, res) => {
     try {
-      res.json({ modules: getErpModuleCodes(process.cwd()) });
+      res.json({ modules: getErpModuleCodes() });
     } catch (error: unknown) {
       console.error("ERP modules error:", error);
       res.status(500).json({ error: "Failed to load ERP modules" });
@@ -101,7 +101,7 @@ async function startServer() {
       const modules = parseModulesFilter(
         req.query.modules as string | string[] | undefined,
       );
-      const rows = searchErpColumns(q, process.cwd(), limit, modules);
+      const rows = searchErpColumns(q, undefined, limit, modules);
       res.json({ rows, count: rows.length, limit });
     } catch (error: unknown) {
       console.error("ERP search error:", error);
@@ -115,7 +115,7 @@ async function startServer() {
       return res.status(400).json({ error: "tableId is required" });
     }
     try {
-      res.json(getErpTableColumns(tableId, process.cwd()));
+      res.json(getErpTableColumns(tableId));
     } catch (error: unknown) {
       console.error("ERP table error:", error);
       res.status(500).json({ error: "Failed to load table columns" });

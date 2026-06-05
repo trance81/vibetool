@@ -21,10 +21,12 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const modules = parseModulesFilter(req.query.modules);
-    const rows = searchErpColumns(q, process.cwd(), limit, modules);
+    const rows = searchErpColumns(q, undefined, limit, modules);
     res.json({ rows, count: rows.length, limit });
   } catch (error: unknown) {
     console.error("ERP search error:", error);
-    res.status(500).json({ error: "Failed to search ERP columns" });
+    const message =
+      error instanceof Error ? error.message : "Failed to search ERP columns";
+    res.status(500).json({ error: message });
   }
 }

@@ -7,9 +7,11 @@ export default function handler(_req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    res.json(getErpDatasetMeta(process.cwd()));
+    res.json(getErpDatasetMeta());
   } catch (error: unknown) {
     console.error("ERP meta error:", error);
-    res.status(500).json({ error: "Failed to load ERP column metadata" });
+    const message =
+      error instanceof Error ? error.message : "Failed to load ERP column metadata";
+    res.status(500).json({ error: message });
   }
 }
